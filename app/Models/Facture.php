@@ -32,6 +32,14 @@ class Facture extends Model
         return $data;
     }
 
+    /** Un membre ne voit que les factures de ses propres échanges ; l'admin voit tout. */
+    public function scopeVisiblePour(Builder $query, User $user): Builder
+    {
+        return $user->isAdmin()
+            ? $query
+            : $query->whereHas('echange', fn ($q) => $q->visiblePour($user));
+    }
+
     public function scopeFiltre(Builder $query, array $f): Builder
     {
         return $query

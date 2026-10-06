@@ -4,10 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Installation;
 use App\Models\Production;
+use App\Services\AccessService;
 use Illuminate\Http\Request;
 
 class ProductionController extends Controller
 {
+    public function __construct(private AccessService $access)
+    {
+    }
+
     private function rules(): array
     {
         return [
@@ -19,6 +24,8 @@ class ProductionController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Production::class);
+
         $productions = Production::with('installation')->filtre($request->query())
             ->latest('date')->paginate(10)->withQueryString();
         return view('productions.index', [
@@ -27,39 +34,51 @@ class ProductionController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('productions.create', ['installations' => Installation::orderBy('nom')->get()]);
+        $this->authorize('create', Production::class);
+        return view('productions.create', ['installations' => Installation::gereesPar($request->user())->orderBy('nom')->get()]);
     }
 
     public function store(Request $request)
     {
-        Production::create($request->validate($this->rules()));
+        $this->authorize('create', Production::class);
+        $data = $request->validate($this->rules());
+        $this->access->assertInstallation($request->user(), $data['installation_id']);
+
+        Production::create($data);
         return redirect()->route('productions.index')->with('success', 'Production enregistrée avec succès.');
     }
 
     public function show(Production $production)
     {
+        $this->authorize('view', $production);
         $production->load('installation.proprietaire');
         return view('productions.show', compact('production'));
     }
 
-    public function edit(Production $production)
+    public function edit(Request $request, Production $production)
     {
+        $this->authorize('update', $production);
         return view('productions.edit', [
             'production' => $production,
-            'installations' => Installation::orderBy('nom')->get(),
+            'installations' => Installation::gereesPar($request->user())->orderBy('nom')->get(),
         ]);
     }
 
     public function update(Request $request, Production $production)
     {
-        $production->update($request->validate($this->rules()));
+        $this->authorize('update', $production);
+        $data = $request->validate($this->rules());
+        $this->access->assertInstallation($request->user(), $data['installation_id']);
+
+        $production->update($data);
         return redirect()->route('productions.index')->with('success', 'Production modifiée avec succès.');
     }
 
     public function destroy(Production $production)
     {
+        $this->authorize('delete', $production);
         $production->delete();
         return redirect()->route('productions.index')->with('success', 'Production supprimée.');
     }

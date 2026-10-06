@@ -46,6 +46,12 @@ class Installation extends Model
         return max(0, $produit - $engage);
     }
 
+    /** Installations sur lesquelles l'utilisateur peut agir (les siennes ; toutes pour l'admin). */
+    public function scopeGereesPar(Builder $query, User $user): Builder
+    {
+        return $user->isAdmin() ? $query : $query->where('user_id', $user->id);
+    }
+
     public function scopeFiltre(Builder $query, array $f): Builder
     {
         return $query

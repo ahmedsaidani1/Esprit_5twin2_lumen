@@ -48,12 +48,16 @@
             </td>
             <td class="text-nowrap">
                 <a href="{{ route('offres.show', $o) }}" class="btn btn-sm btn-info">Voir</a>
+                @can('update', $o)
                 <a href="{{ route('offres.edit', $o) }}" class="btn btn-sm btn-warning">Modifier</a>
+                @endcan
+                @can('delete', $o)
                 <form action="{{ route('offres.destroy', $o) }}" method="POST" class="d-inline"
                       onsubmit="return confirm('Supprimer cette offre ?')">
                     @csrf @method('DELETE')
                     <button class="btn btn-sm btn-danger">Supprimer</button>
                 </form>
+                @endcan
             </td>
         </tr>
     @empty

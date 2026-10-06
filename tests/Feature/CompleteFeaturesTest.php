@@ -16,6 +16,12 @@ class CompleteFeaturesTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->actingAs(User::factory()->admin()->create());
+    }
+
     private function setupData(float $produit = 200): array
     {
         $vendeur = User::factory()->create();
@@ -219,7 +225,7 @@ class CompleteFeaturesTest extends TestCase
         foreach (['communautes', 'installations', 'productions', 'offres', 'echanges', 'factures'] as $r) {
             $this->getJson("/api/$r")->assertOk()->assertJsonStructure(['data', 'current_page', 'total']);
         }
-        $this->getJson('/api/users')->assertOk()->assertJsonCount(2);
+        $this->getJson('/api/users')->assertOk()->assertJsonCount(3); // vendeur, acheteur + l'admin connecté
         $this->getJson('/api/stats')->assertOk()->assertJsonStructure(['compteurs', 'energie', 'factures']);
     }
 

@@ -16,6 +16,12 @@ class EnergyFlowTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->actingAs(User::factory()->admin()->create());
+    }
+
     private function setupData(): array
     {
         $vendeur = User::factory()->create();

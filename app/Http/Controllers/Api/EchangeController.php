@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Echange;
+use App\Models\User;
 use App\Services\EchangeService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 
@@ -22,14 +24,19 @@ class EchangeController extends CrudController
         return $this->service->rules();
     }
 
-    protected function persist(array $data): Model
+    protected function scopeFor(Builder $query, User $user): Builder
     {
-        return $this->service->create($data);
+        return $query->visiblePour($user);
     }
 
-    protected function modify(Model $record, array $data): Model
+    protected function persist(array $data, User $actor): Model
     {
-        return $this->service->update($record, $data);
+        return $this->service->create($data, $actor);
+    }
+
+    protected function modify(Model $record, array $data, User $actor): Model
+    {
+        return $this->service->update($record, $data, $actor);
     }
 
     protected function remove(Model $record): ?JsonResponse

@@ -46,6 +46,14 @@ class Echange extends Model
         return $this->quantite_kwh * $this->prix_unitaire;
     }
 
+    /** Un membre ne voit que les échanges où il est vendeur ou acheteur ; l'admin voit tout. */
+    public function scopeVisiblePour(Builder $query, User $user): Builder
+    {
+        return $user->isAdmin()
+            ? $query
+            : $query->where(fn ($q) => $q->where('vendeur_id', $user->id)->orWhere('acheteur_id', $user->id));
+    }
+
     public function scopeFiltre(Builder $query, array $f): Builder
     {
         return $query

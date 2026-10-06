@@ -32,7 +32,7 @@
         <select name="acheteur_id" class="form-select @error('acheteur_id') is-invalid @enderror" required>
             <option value="">-- Choisir --</option>
             @foreach($users as $u)
-                <option value="{{ $u->id }}" @selected(old('acheteur_id', $e->acheteur_id ?? '') == $u->id)>{{ $u->name }}</option>
+                <option value="{{ $u->id }}" @selected(old('acheteur_id', $e->acheteur_id ?? auth()->id()) == $u->id)>{{ $u->name }}</option>
             @endforeach
         </select>
         @error('acheteur_id')<div class="invalid-feedback">{{ $message }}</div>@enderror

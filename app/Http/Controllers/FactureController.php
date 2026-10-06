@@ -4,11 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Echange;
 use App\Models\Facture;
+use App\Services\AccessService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class FactureController extends Controller
 {
+    public function __construct(private AccessService $access)
+    {
+    }
+
     private function rules(?Facture $facture = null): array
     {
         return [
@@ -21,46 +26,68 @@ class FactureController extends Controller
         ];
     }
 
+    /** Échanges pour lesquels l'utilisateur peut émettre une facture (ceux dont il est vendeur ; tous pour l'admin). */
+    private function echangesFacturables(Request $request)
+    {
+        return Echange::with('vendeur', 'acheteur')
+            ->when(!$request->user()->isAdmin(), fn ($q) => $q->where('vendeur_id', $request->user()->id))
+            ->get();
+    }
+
     public function index(Request $request)
     {
-        $factures = Facture::with('echange.vendeur', 'echange.acheteur')
+        $this->authorize('viewAny', Facture::class);
+
+        $factures = Facture::visiblePour($request->user())->with('echange.vendeur', 'echange.acheteur')
             ->filtre($request->query())->latest()->paginate(10)->withQueryString();
         return view('factures.index', compact('factures'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('factures.create', ['echanges' => Echange::with('vendeur', 'acheteur')->get()]);
+        $this->authorize('create', Facture::class);
+        return view('factures.create', ['echanges' => $this->echangesFacturables($request)]);
     }
 
     public function store(Request $request)
     {
-        Facture::create(Facture::completerMontant($request->validate($this->rules())));
+        $this->authorize('create', Facture::class);
+        $data = $request->validate($this->rules());
+        $this->access->assertFactureIssuer($request->user(), $data['echange_id']);
+
+        Facture::create(Facture::completerMontant($data));
         return redirect()->route('factures.index')->with('success', 'Facture créée avec succès.');
     }
 
     public function show(Facture $facture)
     {
+        $this->authorize('view', $facture);
         $facture->load('echange.vendeur', 'echange.acheteur', 'echange.communaute');
         return view('factures.show', compact('facture'));
     }
 
-    public function edit(Facture $facture)
+    public function edit(Request $request, Facture $facture)
     {
+        $this->authorize('update', $facture);
         return view('factures.edit', [
             'facture' => $facture,
-            'echanges' => Echange::with('vendeur', 'acheteur')->get(),
+            'echanges' => $this->echangesFacturables($request),
         ]);
     }
 
     public function update(Request $request, Facture $facture)
     {
-        $facture->update(Facture::completerMontant($request->validate($this->rules($facture))));
+        $this->authorize('update', $facture);
+        $data = $request->validate($this->rules($facture));
+        $this->access->assertFactureIssuer($request->user(), $data['echange_id']);
+
+        $facture->update(Facture::completerMontant($data));
         return redirect()->route('factures.index')->with('success', 'Facture modifiée avec succès.');
     }
 
     public function destroy(Facture $facture)
     {
+        $this->authorize('delete', $facture);
         $facture->delete();
         return redirect()->route('factures.index')->with('success', 'Facture supprimée.');
     }

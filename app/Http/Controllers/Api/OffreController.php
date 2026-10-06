@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Offre;
+use App\Models\User;
 use App\Services\OffreService;
 use Illuminate\Database\Eloquent\Model;
 
@@ -26,13 +27,13 @@ class OffreController extends CrudController
         Offre::expireOutdated();
     }
 
-    protected function persist(array $data): Model
+    protected function persist(array $data, User $actor): Model
     {
-        return $this->service->create($data);
+        return $this->service->create($data, $actor);
     }
 
-    protected function modify(Model $record, array $data): Model
+    protected function modify(Model $record, array $data, User $actor): Model
     {
-        return $this->service->update($record, $data);
+        return $this->service->update($record, $data, $actor);
     }
 }

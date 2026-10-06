@@ -9,16 +9,37 @@
 <body class="bg-light">
 <nav class="navbar navbar-expand navbar-dark bg-success mb-4">
     <div class="container">
-        <a class="navbar-brand" href="{{ route('dashboard') }}">☀ SolarShare</a>
-        <div class="navbar-nav">
-            <a class="nav-link" href="{{ route('dashboard') }}">Accueil</a>
-            <a class="nav-link" href="{{ route('communautes.index') }}">Communautés</a>
-            <a class="nav-link" href="{{ route('echanges.index') }}">Échanges</a>
-            <a class="nav-link" href="{{ route('factures.index') }}">Factures</a>
-            <a class="nav-link" href="{{ route('installations.index') }}">Installations</a>
-            <a class="nav-link" href="{{ route('productions.index') }}">Productions</a>
-            <a class="nav-link" href="{{ route('offres.index') }}">Offres</a>
-        </div>
+        @auth
+            <a class="navbar-brand" href="{{ route('dashboard') }}">☀ SolarShare</a>
+            <div class="navbar-nav me-auto">
+                <a class="nav-link" href="{{ route('dashboard') }}">Accueil</a>
+                <a class="nav-link" href="{{ route('communautes.index') }}">Communautés</a>
+                <a class="nav-link" href="{{ route('echanges.index') }}">Échanges</a>
+                <a class="nav-link" href="{{ route('factures.index') }}">Factures</a>
+                <a class="nav-link" href="{{ route('installations.index') }}">Installations</a>
+                <a class="nav-link" href="{{ route('productions.index') }}">Productions</a>
+                <a class="nav-link" href="{{ route('offres.index') }}">Offres</a>
+                @can('viewAny', \App\Models\User::class)
+                    <a class="nav-link" href="{{ route('users.index') }}">Utilisateurs</a>
+                @endcan
+            </div>
+            <div class="navbar-nav align-items-center">
+                <a class="nav-link" href="{{ route('profile.edit') }}">
+                    {{ auth()->user()->name }}
+                    <span class="badge bg-light text-success">{{ auth()->user()->role }}</span>
+                </a>
+                <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                    @csrf
+                    <button class="btn btn-sm btn-outline-light ms-2">Déconnexion</button>
+                </form>
+            </div>
+        @else
+            <a class="navbar-brand" href="{{ route('login') }}">☀ SolarShare</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="{{ route('login') }}">Connexion</a>
+                <a class="nav-link" href="{{ route('register') }}">Inscription</a>
+            </div>
+        @endauth
     </div>
 </nav>
 <div class="container">

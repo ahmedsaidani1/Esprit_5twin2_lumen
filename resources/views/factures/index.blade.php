@@ -40,12 +40,16 @@
             </td>
             <td class="text-nowrap">
                 <a href="{{ route('factures.show', $f) }}" class="btn btn-sm btn-info">Voir</a>
+                @can('update', $f)
                 <a href="{{ route('factures.edit', $f) }}" class="btn btn-sm btn-warning">Modifier</a>
+                @endcan
+                @can('delete', $f)
                 <form action="{{ route('factures.destroy', $f) }}" method="POST" class="d-inline"
                       onsubmit="return confirm('Supprimer cette facture ?')">
                     @csrf @method('DELETE')
                     <button class="btn btn-sm btn-danger">Supprimer</button>
                 </form>
+                @endcan
             </td>
         </tr>
     @empty

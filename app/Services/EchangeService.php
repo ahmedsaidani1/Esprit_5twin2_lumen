@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Echange;
 use App\Models\Facture;
 use App\Models\Offre;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -27,8 +28,14 @@ class EchangeService
         ];
     }
 
-    public function create(array $data): Echange
+    public function __construct(private AccessService $access)
     {
+    }
+
+    public function create(array $data, User $actor): Echange
+    {
+        $this->access->assertEchangeParticipant($actor, $data);
+        $this->access->assertCanSetStatut($actor, $data['statut'], $data);
         $this->checkOffre($data);
 
         return DB::transaction(function () use ($data) {
@@ -39,8 +46,10 @@ class EchangeService
         });
     }
 
-    public function update(Echange $echange, array $data): Echange
+    public function update(Echange $echange, array $data, User $actor): Echange
     {
+        $this->access->assertEchangeParticipant($actor, $data);
+        $this->access->assertCanSetStatut($actor, $data['statut'], $data, $echange);
         $this->checkOffre($data, $echange);
 
         return DB::transaction(function () use ($echange, $data) {

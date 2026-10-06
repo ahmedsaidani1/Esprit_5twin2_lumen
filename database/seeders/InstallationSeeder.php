@@ -13,7 +13,8 @@ class InstallationSeeder extends Seeder
 {
     public function run(): void
     {
-        $userIds = User::orderBy('id')->pluck('id');
+        // Les installations appartiennent à des membres (pas à l'administrateur)
+        $userIds = User::where('role', 'membre')->orderBy('id')->pluck('id');
         $communauteIds = Communaute::orderBy('id')->pluck('id');
 
         $installations = collect([

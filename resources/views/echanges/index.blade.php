@@ -45,12 +45,16 @@
             <td><span class="badge bg-secondary">{{ $e->statut }}</span></td>
             <td class="text-nowrap">
                 <a href="{{ route('echanges.show', $e) }}" class="btn btn-sm btn-info">Voir</a>
+                @can('update', $e)
                 <a href="{{ route('echanges.edit', $e) }}" class="btn btn-sm btn-warning">Modifier</a>
+                @endcan
+                @can('delete', $e)
                 <form action="{{ route('echanges.destroy', $e) }}" method="POST" class="d-inline"
                       onsubmit="return confirm('Supprimer cet échange ?')">
                     @csrf @method('DELETE')
                     <button class="btn btn-sm btn-danger">Supprimer</button>
                 </form>
+                @endcan
             </td>
         </tr>
     @empty

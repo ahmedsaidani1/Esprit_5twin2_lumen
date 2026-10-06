@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Installation;
 use App\Models\Offre;
+use App\Models\User;
 use Illuminate\Validation\ValidationException;
 
 class OffreService
@@ -38,14 +39,20 @@ class OffreService
         }
     }
 
-    public function create(array $data): Offre
+    public function __construct(private AccessService $access)
     {
+    }
+
+    public function create(array $data, User $actor): Offre
+    {
+        $this->access->assertInstallation($actor, $data['installation_id']);
         $this->checkStock($data);
         return Offre::create($data);
     }
 
-    public function update(Offre $offre, array $data): Offre
+    public function update(Offre $offre, array $data, User $actor): Offre
     {
+        $this->access->assertInstallation($actor, $data['installation_id']);
         $this->checkStock($data, $offre);
         $offre->update($data);
         return $offre;

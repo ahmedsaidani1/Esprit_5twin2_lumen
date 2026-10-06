@@ -2,18 +2,22 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
+
+    public const ROLES = ['admin', 'membre'];
 
     /**
-     * The attributes that are mass assignable.
+     * Le rôle n'est jamais rempli depuis l'inscription : seuls les contrôleurs
+     * réservés aux administrateurs le définissent explicitement.
      *
      * @var list<string>
      */
@@ -21,11 +25,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'communaute_id',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
      * @var list<string>
      */
     protected $hidden = [
@@ -34,8 +38,6 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
      * @return array<string, string>
      */
     protected function casts(): array
@@ -44,5 +46,39 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function communaute()
+    {
+        return $this->belongsTo(Communaute::class);
+    }
+
+    public function installations()
+    {
+        return $this->hasMany(Installation::class);
+    }
+
+    public function echangesVendus()
+    {
+        return $this->hasMany(Echange::class, 'vendeur_id');
+    }
+
+    public function echangesAchetes()
+    {
+        return $this->hasMany(Echange::class, 'acheteur_id');
+    }
+
+    public function scopeFiltre(Builder $query, array $f): Builder
+    {
+        return $query
+            ->when($f['role'] ?? null, fn ($q, $v) => $q->where('role', $v))
+            ->when($f['q'] ?? null, fn ($q, $v) => $q->where(
+                fn ($w) => $w->where('name', 'like', "%{$v}%")->orWhere('email', 'like', "%{$v}%")
+            ));
     }
 }

@@ -36,12 +36,16 @@
             <td>{{ $i->localisation ?? '—' }}</td>
             <td class="text-nowrap">
                 <a href="{{ route('installations.show', $i) }}" class="btn btn-sm btn-info">Voir</a>
+                @can('update', $i)
                 <a href="{{ route('installations.edit', $i) }}" class="btn btn-sm btn-warning">Modifier</a>
+                @endcan
+                @can('delete', $i)
                 <form action="{{ route('installations.destroy', $i) }}" method="POST" class="d-inline"
                       onsubmit="return confirm('Supprimer cette installation ?')">
                     @csrf @method('DELETE')
                     <button class="btn btn-sm btn-danger">Supprimer</button>
                 </form>
+                @endcan
             </td>
         </tr>
     @empty

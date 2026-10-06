@@ -34,12 +34,16 @@
             <td>{{ number_format($p->energie_produite_kwh, 2) }}</td>
             <td class="text-nowrap">
                 <a href="{{ route('productions.show', $p) }}" class="btn btn-sm btn-info">Voir</a>
+                @can('update', $p)
                 <a href="{{ route('productions.edit', $p) }}" class="btn btn-sm btn-warning">Modifier</a>
+                @endcan
+                @can('delete', $p)
                 <form action="{{ route('productions.destroy', $p) }}" method="POST" class="d-inline"
                       onsubmit="return confirm('Supprimer cette production ?')">
                     @csrf @method('DELETE')
                     <button class="btn btn-sm btn-danger">Supprimer</button>
                 </form>
+                @endcan
             </td>
         </tr>
     @empty

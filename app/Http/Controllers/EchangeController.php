@@ -29,7 +29,10 @@ class EchangeController extends Controller
 
     public function index(Request $request)
     {
-        $echanges = Echange::with(['vendeur', 'acheteur', 'communaute', 'offre', 'facture'])
+        $this->authorize('viewAny', Echange::class);
+
+        $echanges = Echange::visiblePour($request->user())
+            ->with(['vendeur', 'acheteur', 'communaute', 'offre', 'facture'])
             ->filtre($request->query())
             ->latest('date_echange')->paginate(10)->withQueryString();
 
@@ -41,34 +44,40 @@ class EchangeController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Echange::class);
         return view('echanges.create', $this->formData());
     }
 
     public function store(Request $request)
     {
-        $this->service->create($request->validate($this->service->rules()));
+        $this->authorize('create', Echange::class);
+        $this->service->create($request->validate($this->service->rules()), $request->user());
         return redirect()->route('echanges.index')->with('success', 'Échange créé avec succès.');
     }
 
     public function show(Echange $echange)
     {
+        $this->authorize('view', $echange);
         $echange->load(['vendeur', 'acheteur', 'communaute', 'offre.installation', 'facture']);
         return view('echanges.show', compact('echange'));
     }
 
     public function edit(Echange $echange)
     {
+        $this->authorize('update', $echange);
         return view('echanges.edit', ['echange' => $echange] + $this->formData($echange));
     }
 
     public function update(Request $request, Echange $echange)
     {
-        $this->service->update($echange, $request->validate($this->service->rules()));
+        $this->authorize('update', $echange);
+        $this->service->update($echange, $request->validate($this->service->rules()), $request->user());
         return redirect()->route('echanges.index')->with('success', 'Échange modifié avec succès.');
     }
 
     public function destroy(Echange $echange)
     {
+        $this->authorize('delete', $echange);
         $this->service->delete($echange);
         return redirect()->route('echanges.index')->with('success', 'Échange supprimé.');
     }

@@ -3,7 +3,9 @@
 @section('content')
 <div class="d-flex justify-content-between mb-3">
     <h2>Liste des communautés</h2>
+    @can('create', \App\Models\Communaute::class)
     <a href="{{ route('communautes.create') }}" class="btn btn-success">+ Nouvelle communauté</a>
+    @endcan
 </div>
 <form method="GET" class="row g-2 mb-3">
     <div class="col-md-4"><input type="text" name="q" value="{{ request('q') }}" class="form-control" placeholder="Rechercher (nom, ville)"></div>
@@ -24,12 +26,16 @@
             <td>{{ $c->echanges_count }}</td>
             <td class="text-nowrap">
                 <a href="{{ route('communautes.show', $c) }}" class="btn btn-sm btn-info">Voir</a>
+                @can('update', $c)
                 <a href="{{ route('communautes.edit', $c) }}" class="btn btn-sm btn-warning">Modifier</a>
+                @endcan
+                @can('delete', $c)
                 <form action="{{ route('communautes.destroy', $c) }}" method="POST" class="d-inline"
                       onsubmit="return confirm('Supprimer cette communauté ?')">
                     @csrf @method('DELETE')
                     <button class="btn btn-sm btn-danger">Supprimer</button>
                 </form>
+                @endcan
             </td>
         </tr>
     @empty

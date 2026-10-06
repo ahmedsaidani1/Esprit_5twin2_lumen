@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Facture;
+use App\Models\User;
+use App\Services\AccessService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 
@@ -11,6 +14,10 @@ class FactureController extends CrudController
     protected string $model = Facture::class;
 
     protected array $with = ['echange'];
+
+    public function __construct(private AccessService $access)
+    {
+    }
 
     protected function rules(?Model $record = null): array
     {
@@ -24,13 +31,20 @@ class FactureController extends CrudController
         ];
     }
 
-    protected function persist(array $data): Model
+    protected function scopeFor(Builder $query, User $user): Builder
     {
+        return $query->visiblePour($user);
+    }
+
+    protected function persist(array $data, User $actor): Model
+    {
+        $this->access->assertFactureIssuer($actor, $data['echange_id']);
         return Facture::create(Facture::completerMontant($data));
     }
 
-    protected function modify(Model $record, array $data): Model
+    protected function modify(Model $record, array $data, User $actor): Model
     {
+        $this->access->assertFactureIssuer($actor, $data['echange_id']);
         $record->update(Facture::completerMontant($data));
         return $record;
     }
