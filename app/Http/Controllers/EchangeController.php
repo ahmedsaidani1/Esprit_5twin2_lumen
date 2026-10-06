@@ -4,69 +4,72 @@ namespace App\Http\Controllers;
 
 use App\Models\Communaute;
 use App\Models\Echange;
+use App\Models\Offre;
 use App\Models\User;
+use App\Services\EchangeService;
 use Illuminate\Http\Request;
 
 class EchangeController extends Controller
 {
-    private function rules(): array
+    public function __construct(private EchangeService $service)
+    {
+    }
+
+    private function formData(?Echange $echange = null): array
     {
         return [
-            'vendeur_id'    => 'required|exists:users,id',
-            'acheteur_id'   => 'required|exists:users,id|different:vendeur_id',
-            'communaute_id' => 'required|exists:communautes,id',
-            'quantite_kwh'  => 'required|numeric|min:0.01',
-            'prix_unitaire' => 'required|numeric|min:0',
-            'date_echange'  => 'required|date',
-            'statut'        => 'required|in:' . implode(',', Echange::STATUTS),
+            'users' => User::orderBy('name')->get(),
+            'communautes' => Communaute::orderBy('nom')->get(),
+            'offres' => Offre::with('installation')
+                ->where('statut', 'disponible')
+                ->when($echange?->offre_id, fn ($q, $id) => $q->orWhere('id', $id))
+                ->get(),
         ];
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $echanges = Echange::with(['vendeur', 'acheteur', 'communaute', 'facture'])
-            ->latest('date_echange')->paginate(10);
-        return view('echanges.index', compact('echanges'));
-    }
+        $echanges = Echange::with(['vendeur', 'acheteur', 'communaute', 'offre', 'facture'])
+            ->filtre($request->query())
+            ->latest('date_echange')->paginate(10)->withQueryString();
 
-    public function create()
-    {
-        return view('echanges.create', [
-            'users' => User::orderBy('name')->get(),
+        return view('echanges.index', [
+            'echanges' => $echanges,
             'communautes' => Communaute::orderBy('nom')->get(),
         ]);
     }
 
+    public function create()
+    {
+        return view('echanges.create', $this->formData());
+    }
+
     public function store(Request $request)
     {
-        Echange::create($request->validate($this->rules()));
+        $this->service->create($request->validate($this->service->rules()));
         return redirect()->route('echanges.index')->with('success', 'Échange créé avec succès.');
     }
 
     public function show(Echange $echange)
     {
-        $echange->load(['vendeur', 'acheteur', 'communaute', 'facture']);
+        $echange->load(['vendeur', 'acheteur', 'communaute', 'offre.installation', 'facture']);
         return view('echanges.show', compact('echange'));
     }
 
     public function edit(Echange $echange)
     {
-        return view('echanges.edit', [
-            'echange' => $echange,
-            'users' => User::orderBy('name')->get(),
-            'communautes' => Communaute::orderBy('nom')->get(),
-        ]);
+        return view('echanges.edit', ['echange' => $echange] + $this->formData($echange));
     }
 
     public function update(Request $request, Echange $echange)
     {
-        $echange->update($request->validate($this->rules()));
+        $this->service->update($echange, $request->validate($this->service->rules()));
         return redirect()->route('echanges.index')->with('success', 'Échange modifié avec succès.');
     }
 
     public function destroy(Echange $echange)
     {
-        $echange->delete();
+        $this->service->delete($echange);
         return redirect()->route('echanges.index')->with('success', 'Échange supprimé.');
     }
 }

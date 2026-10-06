@@ -5,6 +5,28 @@
     <h2>Liste des échanges</h2>
     <a href="{{ route('echanges.create') }}" class="btn btn-success">+ Nouvel échange</a>
 </div>
+<form method="GET" class="row g-2 mb-3">
+    <div class="col-md-3">
+        <select name="statut" class="form-select">
+            <option value="">Tous les statuts</option>
+            @foreach(\App\Models\Echange::STATUTS as $s)
+                <option value="{{ $s }}" @selected(request('statut') == $s)>{{ ucfirst($s) }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="communaute_id" class="form-select">
+            <option value="">Toutes les communautés</option>
+            @foreach($communautes as $c)
+                <option value="{{ $c->id }}" @selected(request('communaute_id') == $c->id)>{{ $c->nom }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-outline-success">Filtrer</button>
+        <a href="{{ route('echanges.index') }}" class="btn btn-outline-secondary">Réinitialiser</a>
+    </div>
+</form>
 <table class="table table-striped bg-white">
     <thead>
         <tr><th>#</th><th>Vendeur</th><th>Acheteur</th><th>Communauté</th>

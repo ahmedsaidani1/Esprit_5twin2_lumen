@@ -6,6 +6,14 @@
     <p><strong>Vendeur :</strong> {{ $echange->vendeur->name }}</p>
     <p><strong>Acheteur :</strong> {{ $echange->acheteur->name }}</p>
     <p><strong>Communauté :</strong> {{ $echange->communaute->nom }}</p>
+    <p><strong>Offre :</strong>
+        @if($echange->offre)
+            <a href="{{ route('offres.show', $echange->offre) }}">Offre #{{ $echange->offre_id }}</a>
+            ({{ $echange->offre->installation->nom }})
+        @else
+            Aucune
+        @endif
+    </p>
     <p><strong>Quantité :</strong> {{ $echange->quantite_kwh }} kWh</p>
     <p><strong>Prix unitaire :</strong> {{ $echange->prix_unitaire }}</p>
     <p><strong>Montant calculé :</strong> {{ number_format($echange->montant, 2) }}</p>
@@ -15,7 +23,7 @@
         @if($echange->facture)
             <a href="{{ route('factures.show', $echange->facture) }}">Facture #{{ $echange->facture->id }}</a>
         @else
-            Aucune <a href="{{ route('factures.create') }}">(créer)</a>
+            Aucune <a href="{{ route('factures.create', ['echange_id' => $echange->id]) }}">(créer)</a>
         @endif
     </p>
 </div>

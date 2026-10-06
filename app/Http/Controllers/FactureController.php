@@ -21,18 +21,10 @@ class FactureController extends Controller
         ];
     }
 
-    private function withMontant(array $data): array
+    public function index(Request $request)
     {
-        // Si le montant est vide, on le calcule : quantité × prix unitaire
-        if (!isset($data['montant_total'])) {
-            $data['montant_total'] = Echange::findOrFail($data['echange_id'])->montant;
-        }
-        return $data;
-    }
-
-    public function index()
-    {
-        $factures = Facture::with('echange.vendeur', 'echange.acheteur')->latest()->paginate(10);
+        $factures = Facture::with('echange.vendeur', 'echange.acheteur')
+            ->filtre($request->query())->latest()->paginate(10)->withQueryString();
         return view('factures.index', compact('factures'));
     }
 
@@ -43,8 +35,7 @@ class FactureController extends Controller
 
     public function store(Request $request)
     {
-        $data = $this->withMontant($request->validate($this->rules()));
-        Facture::create($data);
+        Facture::create(Facture::completerMontant($request->validate($this->rules())));
         return redirect()->route('factures.index')->with('success', 'Facture créée avec succès.');
     }
 
@@ -64,8 +55,7 @@ class FactureController extends Controller
 
     public function update(Request $request, Facture $facture)
     {
-        $data = $this->withMontant($request->validate($this->rules($facture)));
-        $facture->update($data);
+        $facture->update(Facture::completerMontant($request->validate($this->rules($facture))));
         return redirect()->route('factures.index')->with('success', 'Facture modifiée avec succès.');
     }
 

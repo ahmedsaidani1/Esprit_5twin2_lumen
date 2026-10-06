@@ -5,6 +5,20 @@
     <h2>Liste des factures</h2>
     <a href="{{ route('factures.create') }}" class="btn btn-success">+ Nouvelle facture</a>
 </div>
+<form method="GET" class="row g-2 mb-3">
+    <div class="col-md-3">
+        <select name="statut" class="form-select">
+            <option value="">Tous les statuts</option>
+            @foreach(\App\Models\Facture::STATUTS as $s)
+                <option value="{{ $s }}" @selected(request('statut') == $s)>{{ ucfirst($s) }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-outline-success">Filtrer</button>
+        <a href="{{ route('factures.index') }}" class="btn btn-outline-secondary">Réinitialiser</a>
+    </div>
+</form>
 <table class="table table-striped bg-white">
     <thead>
         <tr><th>#</th><th>Échange</th><th>Vendeur → Acheteur</th><th>Montant</th>

@@ -9,10 +9,15 @@
 <body class="bg-light">
 <nav class="navbar navbar-expand navbar-dark bg-success mb-4">
     <div class="container">
-        <a class="navbar-brand" href="/">☀ SolarShare</a>
+        <a class="navbar-brand" href="{{ route('dashboard') }}">☀ SolarShare</a>
         <div class="navbar-nav">
+            <a class="nav-link" href="{{ route('dashboard') }}">Accueil</a>
+            <a class="nav-link" href="{{ route('communautes.index') }}">Communautés</a>
             <a class="nav-link" href="{{ route('echanges.index') }}">Échanges</a>
             <a class="nav-link" href="{{ route('factures.index') }}">Factures</a>
+            <a class="nav-link" href="{{ route('installations.index') }}">Installations</a>
+            <a class="nav-link" href="{{ route('productions.index') }}">Productions</a>
+            <a class="nav-link" href="{{ route('offres.index') }}">Offres</a>
         </div>
     </div>
 </nav>
