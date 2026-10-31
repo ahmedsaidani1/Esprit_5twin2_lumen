@@ -26,6 +26,7 @@
             </td>
             <td class="text-nowrap">
                 <a href="{{ route('factures.show', $f) }}" class="btn btn-sm btn-info">Voir</a>
+                <a href="{{ route('factures.pdf', $f) }}" class="btn btn-sm btn-outline-danger">PDF</a>
                 <a href="{{ route('factures.edit', $f) }}" class="btn btn-sm btn-warning">Modifier</a>
                 <form action="{{ route('factures.destroy', $f) }}" method="POST" class="d-inline"
                       onsubmit="return confirm('Supprimer cette facture ?')">

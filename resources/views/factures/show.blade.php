@@ -12,5 +12,6 @@
     <p><strong>Échéance :</strong> {{ $facture->date_echeance->format('d/m/Y') }}</p>
     <p><strong>Statut :</strong> {{ $facture->statut }}</p>
 </div>
+<a href="{{ route('factures.pdf', $facture) }}" class="btn btn-danger mt-3">Télécharger le PDF</a>
 <a href="{{ route('factures.index') }}" class="btn btn-secondary mt-3">Retour</a>
 @endsection

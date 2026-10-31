@@ -13,6 +13,7 @@
         <div class="navbar-nav">
             <a class="nav-link" href="{{ route('echanges.index') }}">Échanges</a>
             <a class="nav-link" href="{{ route('factures.index') }}">Factures</a>
+            <a class="nav-link" href="{{ route('recommandations.index') }}">IA — Matching</a>
         </div>
     </div>
 </nav>

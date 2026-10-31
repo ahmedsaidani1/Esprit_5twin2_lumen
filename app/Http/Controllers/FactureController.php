@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Echange;
 use App\Models\Facture;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -52,6 +53,15 @@ class FactureController extends Controller
     {
         $facture->load('echange.vendeur', 'echange.acheteur', 'echange.communaute');
         return view('factures.show', compact('facture'));
+    }
+
+    public function downloadPdf(Facture $facture)
+    {
+        $facture->load('echange.vendeur', 'echange.acheteur', 'echange.communaute');
+
+        return Pdf::loadView('factures.pdf', compact('facture'))
+            ->setPaper('a4')
+            ->download('facture-' . $facture->id . '.pdf');
     }
 
     public function edit(Facture $facture)
