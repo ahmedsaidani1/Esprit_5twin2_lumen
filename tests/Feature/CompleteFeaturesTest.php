@@ -110,6 +110,33 @@ class CompleteFeaturesTest extends TestCase
         $this->get('/communautes/create')->assertOk()->assertSee('maxlength="255"', false);
     }
 
+    public function test_list_pages_have_live_filtering_hooks(): void
+    {
+        $this->setupData();
+
+        foreach (['communautes', 'echanges', 'factures', 'installations', 'productions', 'offres', 'users'] as $page) {
+            $html = $this->get("/$page")->assertOk()->getContent();
+            $this->assertStringContainsString('<form method="GET"', $html, $page);
+            $this->assertStringContainsString('data-autofilter', $html, $page);
+            $this->assertStringContainsString('id="liste"', $html, $page);
+            $this->assertStringContainsString("form[data-autofilter]", $html, $page);   // le script est inclus
+            // le fallback sans JS (bouton Filtrer) reste présent
+            $this->assertStringContainsString('Filtrer', $html, $page);
+        }
+    }
+
+    public function test_filtered_list_returns_only_the_matching_rows_in_the_liste_block(): void
+    {
+        $this->setupData();
+        Installation::create(['user_id' => User::first()->id, 'nom' => 'Autre Centrale', 'type' => 'eolien', 'puissance_kw' => 9]);
+
+        $html = $this->get('/installations?q=Autre&type=eolien')->assertOk()->getContent();
+        $liste = substr($html, strpos($html, 'id="liste"'));
+
+        $this->assertStringContainsString('Autre Centrale', $liste);
+        $this->assertStringNotContainsString('Toit', $liste);
+    }
+
     // ---------- Dashboard ----------
 
     public function test_dashboard_shows_totals(): void

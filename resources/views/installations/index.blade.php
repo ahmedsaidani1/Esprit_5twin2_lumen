@@ -5,7 +5,7 @@
     <h2>Liste des installations</h2>
     <a href="{{ route('installations.create') }}" class="btn btn-success">+ Nouvelle installation</a>
 </div>
-<form method="GET" class="row g-2 mb-3">
+<form method="GET" class="row g-2 mb-3" data-autofilter>
     <div class="col-md-3"><input type="text" name="q" value="{{ request('q') }}" class="form-control" placeholder="Rechercher par nom"></div>
     <div class="col-md-3">
         <select name="type" class="form-select">
@@ -20,6 +20,7 @@
         <a href="{{ route('installations.index') }}" class="btn btn-outline-secondary">Réinitialiser</a>
     </div>
 </form>
+<div id="liste">
 <table class="table table-striped bg-white">
     <thead>
         <tr><th>#</th><th>Nom</th><th>Propriétaire</th><th>Type</th><th>Puissance (kW)</th>
@@ -54,4 +55,8 @@
     </tbody>
 </table>
 {{ $installations->links('pagination::bootstrap-5') }}
+</div>
+@push('scripts')
+@include('partials.autofilter')
+@endpush
 @endsection

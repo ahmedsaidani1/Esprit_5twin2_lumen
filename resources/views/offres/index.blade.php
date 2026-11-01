@@ -5,7 +5,7 @@
     <h2>Liste des offres</h2>
     <a href="{{ route('offres.create') }}" class="btn btn-success">+ Nouvelle offre</a>
 </div>
-<form method="GET" class="row g-2 mb-3">
+<form method="GET" class="row g-2 mb-3" data-autofilter>
     <div class="col-md-3">
         <select name="statut" class="form-select">
             <option value="">Tous les statuts</option>
@@ -27,6 +27,7 @@
         <a href="{{ route('offres.index') }}" class="btn btn-outline-secondary">Réinitialiser</a>
     </div>
 </form>
+<div id="liste">
 <table class="table table-striped bg-white">
     <thead>
         <tr><th>#</th><th>Installation</th><th>Quantité (kWh)</th><th>Prix/kWh</th>
@@ -66,4 +67,8 @@
     </tbody>
 </table>
 {{ $offres->links('pagination::bootstrap-5') }}
+</div>
+@push('scripts')
+@include('partials.autofilter')
+@endpush
 @endsection

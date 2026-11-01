@@ -7,13 +7,14 @@
     <a href="{{ route('communautes.create') }}" class="btn btn-success">+ Nouvelle communauté</a>
     @endcan
 </div>
-<form method="GET" class="row g-2 mb-3">
+<form method="GET" class="row g-2 mb-3" data-autofilter>
     <div class="col-md-4"><input type="text" name="q" value="{{ request('q') }}" class="form-control" placeholder="Rechercher (nom, ville)"></div>
     <div class="col-auto">
         <button class="btn btn-outline-success">Filtrer</button>
         <a href="{{ route('communautes.index') }}" class="btn btn-outline-secondary">Réinitialiser</a>
     </div>
 </form>
+<div id="liste">
 <table class="table table-striped bg-white">
     <thead><tr><th>#</th><th>Nom</th><th>Ville</th><th>Installations</th><th>Échanges</th><th>Actions</th></tr></thead>
     <tbody>
@@ -44,4 +45,8 @@
     </tbody>
 </table>
 {{ $communautes->links('pagination::bootstrap-5') }}
+</div>
+@push('scripts')
+@include('partials.autofilter')
+@endpush
 @endsection

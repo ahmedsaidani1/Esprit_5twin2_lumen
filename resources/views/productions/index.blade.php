@@ -5,7 +5,7 @@
     <h2>Liste des productions</h2>
     <a href="{{ route('productions.create') }}" class="btn btn-success">+ Nouvelle production</a>
 </div>
-<form method="GET" class="row g-2 mb-3">
+<form method="GET" class="row g-2 mb-3" data-autofilter>
     <div class="col-md-3">
         <select name="installation_id" class="form-select">
             <option value="">Toutes les installations</option>
@@ -21,6 +21,7 @@
         <a href="{{ route('productions.index') }}" class="btn btn-outline-secondary">Réinitialiser</a>
     </div>
 </form>
+<div id="liste">
 <table class="table table-striped bg-white">
     <thead>
         <tr><th>#</th><th>Installation</th><th>Date</th><th>Énergie produite (kWh)</th><th>Actions</th></tr>
@@ -52,4 +53,8 @@
     </tbody>
 </table>
 {{ $productions->links('pagination::bootstrap-5') }}
+</div>
+@push('scripts')
+@include('partials.autofilter')
+@endpush
 @endsection

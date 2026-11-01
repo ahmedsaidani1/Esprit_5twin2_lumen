@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             ['nom' => 'Communauté Verte Sousse', 'ville' => 'Sousse'],
         ])->map(fn ($c) => Communaute::create($c));
 
-        User::factory()->admin()->create([
+       /* User::factory()->admin()->create([
             'name' => 'Admin SolarShare',
             'email' => 'admin@solarshare.test',
         ]);
@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
 
         User::factory(4)->create()->each(
             fn ($u, $i) => $u->update(['communaute_id' => $communautes[($i + 1) % $communautes->count()]->id])
-        );
+        );*/
 
         $this->call(InstallationSeeder::class);
     }

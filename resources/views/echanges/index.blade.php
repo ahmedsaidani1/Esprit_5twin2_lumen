@@ -5,7 +5,7 @@
     <h2>Liste des échanges</h2>
     <a href="{{ route('echanges.create') }}" class="btn btn-success">+ Nouvel échange</a>
 </div>
-<form method="GET" class="row g-2 mb-3">
+<form method="GET" class="row g-2 mb-3" data-autofilter>
     <div class="col-md-3">
         <select name="statut" class="form-select">
             <option value="">Tous les statuts</option>
@@ -27,6 +27,7 @@
         <a href="{{ route('echanges.index') }}" class="btn btn-outline-secondary">Réinitialiser</a>
     </div>
 </form>
+<div id="liste">
 <table class="table table-striped bg-white">
     <thead>
         <tr><th>#</th><th>Vendeur</th><th>Acheteur</th><th>Communauté</th>
@@ -63,4 +64,8 @@
     </tbody>
 </table>
 {{ $echanges->links('pagination::bootstrap-5') }}
+</div>
+@push('scripts')
+@include('partials.autofilter')
+@endpush
 @endsection

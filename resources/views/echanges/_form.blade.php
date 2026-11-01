@@ -81,14 +81,21 @@
 </div>
 <script>
     const offreSelect = document.getElementById('offre_id');
-    function remplirDepuisOffre() {
+    // force = true : l'utilisateur vient de choisir une offre, on remplace les valeurs.
+    // force = false : au chargement (lien "Acheter" depuis une offre), on ne remplit que les champs vides,
+    // pour ne pas écraser une saisie conservée après une erreur ni les valeurs d'un échange existant.
+    function remplirDepuisOffre(force) {
         const opt = offreSelect.selectedOptions[0];
         if (!opt || !opt.value) return;
-        const set = (name, v) => { const el = document.querySelector(`[name=${name}]`); if (el && v) el.value = v; };
+        const set = (name, v) => {
+            const el = document.querySelector(`[name=${name}]`);
+            if (el && v && (force || !el.value)) el.value = v;
+        };
         set('vendeur_id', opt.dataset.vendeur);
         set('communaute_id', opt.dataset.communaute);
         set('quantite_kwh', opt.dataset.quantite);
         set('prix_unitaire', opt.dataset.prix);
     }
-    offreSelect.addEventListener('change', remplirDepuisOffre);
+    offreSelect.addEventListener('change', () => remplirDepuisOffre(true));
+    remplirDepuisOffre(false);
 </script>

@@ -5,7 +5,7 @@
     <h2>Liste des utilisateurs</h2>
     <a href="{{ route('users.create') }}" class="btn btn-success">+ Nouvel utilisateur</a>
 </div>
-<form method="GET" class="row g-2 mb-3">
+<form method="GET" class="row g-2 mb-3" data-autofilter>
     <div class="col-md-4"><input type="text" name="q" value="{{ request('q') }}" class="form-control" placeholder="Rechercher (nom, e-mail)"></div>
     <div class="col-md-3">
         <select name="role" class="form-select">
@@ -20,6 +20,7 @@
         <a href="{{ route('users.index') }}" class="btn btn-outline-secondary">Réinitialiser</a>
     </div>
 </form>
+<div id="liste">
 <table class="table table-striped bg-white">
     <thead><tr><th>#</th><th>Nom</th><th>E-mail</th><th>Rôle</th><th>Communauté</th><th>Installations</th><th>Actions</th></tr></thead>
     <tbody>
@@ -49,4 +50,8 @@
     </tbody>
 </table>
 {{ $users->links('pagination::bootstrap-5') }}
+</div>
+@push('scripts')
+@include('partials.autofilter')
+@endpush
 @endsection

@@ -5,7 +5,7 @@
     <h2>Liste des factures</h2>
     <a href="{{ route('factures.create') }}" class="btn btn-success">+ Nouvelle facture</a>
 </div>
-<form method="GET" class="row g-2 mb-3">
+<form method="GET" class="row g-2 mb-3" data-autofilter>
     <div class="col-md-3">
         <select name="statut" class="form-select">
             <option value="">Tous les statuts</option>
@@ -19,6 +19,7 @@
         <a href="{{ route('factures.index') }}" class="btn btn-outline-secondary">Réinitialiser</a>
     </div>
 </form>
+<div id="liste">
 <table class="table table-striped bg-white">
     <thead>
         <tr><th>#</th><th>Échange</th><th>Vendeur → Acheteur</th><th>Montant</th>
@@ -58,4 +59,8 @@
     </tbody>
 </table>
 {{ $factures->links('pagination::bootstrap-5') }}
+</div>
+@push('scripts')
+@include('partials.autofilter')
+@endpush
 @endsection
