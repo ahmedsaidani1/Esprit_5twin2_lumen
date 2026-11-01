@@ -23,7 +23,7 @@
 <table class="table table-striped bg-white">
     <thead>
         <tr><th>#</th><th>Échange</th><th>Vendeur → Acheteur</th><th>Montant</th>
-            <th>Émission</th><th>Échéance</th><th>Statut</th><th>Actions</th></tr>
+            <th>Émission</th><th>Échéance</th><th>Statut</th><th title="Prédiction IA, visible du vendeur">Risque IA</th><th>Actions</th></tr>
     </thead>
     <tbody>
     @forelse($factures as $f)
@@ -38,6 +38,13 @@
                 <span class="badge bg-{{ $f->statut == 'payee' ? 'success' : ($f->statut == 'impayee' ? 'warning' : 'secondary') }}">
                     {{ $f->statut }}
                 </span>
+            </td>
+            <td>
+                @if($r = $risques[$f->id] ?? null)
+                    <span class="badge bg-{{ ['faible' => 'success', 'moyen' => 'warning', 'élevé' => 'danger'][$r['niveau']] }}">
+                        {{ $r['niveau'] }} · {{ round($r['probabilite'] * 100) }} %
+                    </span>
+                @else — @endif
             </td>
             <td class="text-nowrap">
                 <a href="{{ route('factures.show', $f) }}" class="btn btn-sm btn-info">Voir</a>
@@ -54,7 +61,7 @@
             </td>
         </tr>
     @empty
-        <tr><td colspan="8" class="text-center">Aucune facture.</td></tr>
+        <tr><td colspan="9" class="text-center">Aucune facture.</td></tr>
     @endforelse
     </tbody>
 </table>

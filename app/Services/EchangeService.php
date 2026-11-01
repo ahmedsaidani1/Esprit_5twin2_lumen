@@ -6,6 +6,9 @@ use App\Models\Echange;
 use App\Models\Facture;
 use App\Models\Offre;
 use App\Models\User;
+use App\Notifications\DemandeAchatRecue;
+use App\Notifications\FactureEmise;
+use App\Notifications\StatutEchangeModifie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -38,12 +41,19 @@ class EchangeService
         $this->access->assertCanSetStatut($actor, $data['statut'], $data);
         $this->checkOffre($data);
 
-        return DB::transaction(function () use ($data) {
+        [$echange, $facture] = DB::transaction(function () use ($data) {
             $echange = Echange::create($data);
             $this->syncOffre($echange);
-            $this->syncFacture($echange);
-            return $echange;
+            return [$echange, $this->syncFacture($echange)];
         });
+
+        // Notifications envoyées après validation de la transaction
+        if ($actor->id !== $echange->vendeur_id) {
+            $echange->vendeur->notify(new DemandeAchatRecue($echange));
+        }
+        $this->notifierFacture($facture);
+
+        return $echange;
     }
 
     public function update(Echange $echange, array $data, User $actor): Echange
@@ -52,13 +62,26 @@ class EchangeService
         $this->access->assertCanSetStatut($actor, $data['statut'], $data, $echange);
         $this->checkOffre($data, $echange);
 
-        return DB::transaction(function () use ($echange, $data) {
+        $ancienStatut = $echange->statut;
+        $facture = DB::transaction(function () use ($echange, $data) {
             $ancienne = $echange->offre_id;
             $echange->update($data);
             $this->syncOffre($echange, $ancienne);
-            $this->syncFacture($echange);
-            return $echange;
+            return $this->syncFacture($echange);
         });
+
+        if ($echange->statut !== $ancienStatut && $actor->id !== $echange->acheteur_id) {
+            $echange->acheteur->notify(new StatutEchangeModifie($echange));
+        }
+        $this->notifierFacture($facture);
+
+        return $echange;
+    }
+
+    /** L'acheteur reçoit sa facture : notification + e-mail avec le PDF. */
+    public function notifierFacture(?Facture $facture): void
+    {
+        $facture?->echange->acheteur->notify(new FactureEmise($facture));
     }
 
     public function delete(Echange $echange): void
@@ -109,20 +132,24 @@ class EchangeService
      * Facture automatique : un échange accepté ou terminé reçoit sa facture ;
      * un échange refusé annule sa facture si elle n'est pas déjà payée.
      */
-    private function syncFacture(Echange $echange): void
+    private function syncFacture(Echange $echange): ?Facture
     {
         $facture = $echange->facture()->first();
 
         if (in_array($echange->statut, ['accepte', 'termine'], true) && !$facture) {
-            Facture::create([
+            return Facture::create([
                 'echange_id'    => $echange->id,
                 'montant_total' => $echange->montant,
                 'date_emission' => today(),
                 'date_echeance' => today()->addDays(30),
                 'statut'        => 'impayee',
             ]);
-        } elseif ($echange->statut === 'refuse' && $facture && $facture->statut === 'impayee') {
+        }
+
+        if ($echange->statut === 'refuse' && $facture && $facture->statut === 'impayee') {
             $facture->update(['statut' => 'annulee']);
         }
+
+        return null;
     }
 }
