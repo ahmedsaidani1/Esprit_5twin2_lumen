@@ -1,0 +1,24 @@
+# Relecteur demandé automatiquement selon les fichiers modifiés.
+# Remplacez les noms d'utilisateur GitHub des membres A et C (lignes commentées) puis décommentez-les.
+
+# Par défaut, et membre B (installations, productions, offres)
+*                                               @ahmedsaidani1
+
+# Membre A — échanges et factures
+# app/Services/EchangeService.php              @utilisateur-membre-a
+# app/Http/Controllers/*Facture*               @utilisateur-membre-a
+# app/Notifications/                           @utilisateur-membre-a
+# app/Services/Ia/RisqueImpayeService.php      @utilisateur-membre-a
+# app/Services/Ia/RecommandationOffresService.php @utilisateur-membre-a
+# resources/views/echanges/                    @utilisateur-membre-a
+# resources/views/factures/                    @utilisateur-membre-a
+
+# Membre C — compteurs et consommations
+# app/Http/Controllers/*Compteur*              @utilisateur-membre-c
+# app/Http/Controllers/*Consommation*          @utilisateur-membre-c
+# app/Services/Ia/AnalyseConsommationService.php @utilisateur-membre-c
+# resources/views/compteurs/                   @utilisateur-membre-c
+# resources/views/consommations/               @utilisateur-membre-c
+
+# DevOps : toute l'équipe relit
+# Dockerfile docker-compose.yml .github/ Jenkinsfile  @ahmedsaidani1 @utilisateur-membre-a @utilisateur-membre-c

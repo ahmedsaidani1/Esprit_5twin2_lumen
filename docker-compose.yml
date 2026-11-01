@@ -1,0 +1,123 @@
+# SolarShare — environnement complet avec Docker
+#
+#   docker compose up -d --build                         site : http://localhost:8080
+#   docker compose --profile monitoring up -d --build    + Prometheus (9090) et Grafana (3000)
+#
+# Les e-mails (mot de passe oublié, vérification, factures) arrivent dans Mailpit : http://localhost:8025
+# APP_KEY est lu dans le fichier .env du projet (php artisan key:generate).
+
+x-app: &app
+  build: .
+  image: ${IMAGE:-solarshare:latest}
+  restart: unless-stopped
+  depends_on:
+    db:
+      condition: service_healthy
+  environment: &app-env
+    APP_NAME: SolarShare
+    APP_ENV: production
+    APP_DEBUG: "false"
+    APP_KEY: ${APP_KEY:?Définissez APP_KEY dans .env (php artisan key:generate)}
+    APP_URL: http://localhost:8080
+    APP_LOCALE: fr
+    LOG_CHANNEL: stderr
+    DB_CONNECTION: mysql
+    DB_HOST: db
+    DB_PORT: 3306
+    DB_DATABASE: solarshare
+    DB_USERNAME: solarshare
+    DB_PASSWORD: ${DB_PASSWORD_DOCKER:-solarshare}
+    SESSION_DRIVER: database
+    CACHE_STORE: database
+    QUEUE_CONNECTION: database
+    MAIL_MAILER: smtp
+    MAIL_HOST: mailpit
+    MAIL_PORT: 1025
+    MAIL_FROM_ADDRESS: no-reply@solarshare.test
+    METRICS_TOKEN: ${METRICS_TOKEN:-changez-moi}
+  volumes:
+    - storage:/var/www/html/storage/app
+
+services:
+  app:
+    <<: *app
+    ports:
+      - "8080:80"
+    environment:
+      <<: *app-env
+      CONTAINER_ROLE: app
+      SEED_DEMO: ${SEED_DEMO:-true}   # base vide au premier lancement -> données de démonstration
+
+  queue:
+    <<: *app
+    environment:
+      <<: *app-env
+      CONTAINER_ROLE: queue
+    depends_on:
+      app:
+        condition: service_healthy
+
+  scheduler:
+    <<: *app
+    environment:
+      <<: *app-env
+      CONTAINER_ROLE: scheduler
+    depends_on:
+      app:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: solarshare
+      MYSQL_USER: solarshare
+      MYSQL_PASSWORD: ${DB_PASSWORD_DOCKER:-solarshare}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD_DOCKER:-root}
+    volumes:
+      - mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${DB_ROOT_PASSWORD_DOCKER:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "8025:8025"   # interface web
+      - "1025:1025"   # SMTP (utilisable aussi depuis WAMP)
+
+  prometheus:
+    image: prom/prometheus:latest
+    profiles: ["monitoring"]
+    restart: unless-stopped
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - app
+
+  grafana:
+    image: grafana/grafana:latest
+    profiles: ["monitoring"]
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+volumes:
+  mysql:
+  storage:
+  grafana:

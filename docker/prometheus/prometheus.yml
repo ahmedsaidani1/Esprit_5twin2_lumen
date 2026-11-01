@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 30s
+
+scrape_configs:
+  - job_name: solarshare
+    metrics_path: /metrics
+    # Doit correspondre à METRICS_TOKEN (docker-compose.yml) ; à changer hors démonstration.
+    authorization:
+      type: Bearer
+      credentials: changez-moi
+    static_configs:
+      - targets: ["app:80"]

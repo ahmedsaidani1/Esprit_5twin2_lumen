@@ -14,8 +14,14 @@ class InstallationSeeder extends Seeder
     public function run(): void
     {
         // Les installations appartiennent à des membres (pas à l'administrateur)
-        $userIds = User::where('role', 'membre')->orderBy('id')->pluck('id');
+        $userIds = User::role('membre')->orderBy('id')->pluck('id');
         $communauteIds = Communaute::orderBy('id')->pluck('id');
+
+        if ($userIds->isEmpty()) {
+            $this->command->warn('Aucun membre : installations de démonstration non créées (voir DemoSeeder).');
+
+            return;
+        }
 
         $installations = collect([
             ['nom' => 'Toit solaire Ariana', 'type' => 'solaire', 'puissance_kw' => 12.5, 'localisation' => 'Ariana'],

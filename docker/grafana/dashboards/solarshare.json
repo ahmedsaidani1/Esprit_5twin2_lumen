@@ -1,0 +1,48 @@
+{
+  "title": "SolarShare",
+  "uid": "solarshare",
+  "schemaVersion": 39,
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "panels": [
+    {
+      "type": "stat", "title": "Application disponible", "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "targets": [{ "expr": "solarshare_up", "refId": "A" }],
+      "fieldConfig": { "defaults": { "mappings": [{ "type": "value", "options": { "0": { "text": "Hors service", "color": "red" }, "1": { "text": "OK", "color": "green" } } }] } }
+    },
+    {
+      "type": "stat", "title": "Utilisateurs", "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
+      "targets": [{ "expr": "solarshare_users_total", "refId": "A" }]
+    },
+    {
+      "type": "stat", "title": "Énergie en vente (kWh)", "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
+      "targets": [{ "expr": "solarshare_offres_disponibles_kwh", "refId": "A" }]
+    },
+    {
+      "type": "stat", "title": "Factures en retard", "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 },
+      "targets": [{ "expr": "solarshare_factures_en_retard", "refId": "A" }],
+      "fieldConfig": { "defaults": { "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 10 }] } } }
+    },
+    {
+      "type": "stat", "title": "AUC du modèle de risque (IA)", "gridPos": { "x": 16, "y": 0, "w": 4, "h": 4 },
+      "targets": [{ "expr": "solarshare_ia_modele_risque_auc", "refId": "A" }],
+      "fieldConfig": { "defaults": { "decimals": 2 } }
+    },
+    {
+      "type": "stat", "title": "Tâches en échec", "gridPos": { "x": 20, "y": 0, "w": 4, "h": 4 },
+      "targets": [{ "expr": "solarshare_jobs_echoues", "refId": "A" }]
+    },
+    {
+      "type": "timeseries", "title": "Échanges par statut", "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "targets": [{ "expr": "solarshare_echanges", "legendFormat": "{{statut}}", "refId": "A" }]
+    },
+    {
+      "type": "timeseries", "title": "Montant des factures par statut (DT)", "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "targets": [{ "expr": "solarshare_factures_montant", "legendFormat": "{{statut}}", "refId": "A" }]
+    },
+    {
+      "type": "timeseries", "title": "Latence de la base de données (s)", "gridPos": { "x": 0, "y": 12, "w": 24, "h": 6 },
+      "targets": [{ "expr": "solarshare_database_latency_seconds", "refId": "A" }]
+    }
+  ]
+}

@@ -1,0 +1,169 @@
+name: CI/CD
+
+# Intégration continue à chaque push et pull request ; livraison (image Docker) sur main/develop et les tags.
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PHP_VERSION: "8.3"
+  PHP_EXTENSIONS: mbstring, pdo_mysql, pdo_sqlite, sqlite3, gd, zip, intl, bcmath
+
+jobs:
+  # ------------------------------------------------------------------ qualité du code
+  qualite:
+    name: Style et analyse statique
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          coverage: none
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ hashFiles('composer.lock') }}
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Style (Laravel Pint)
+        run: vendor/bin/pint --test
+      - name: Analyse statique (Larastan niveau 5)
+        run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+      - name: Audit de sécurité des dépendances
+        run: composer audit
+
+  # ------------------------------------------------------------------ tests
+  tests:
+    name: Tests (${{ matrix.base }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        base: [sqlite, mysql]
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: solarshare_test
+          MYSQL_ROOT_PASSWORD: root
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          coverage: pcov
+      - uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ hashFiles('composer.lock') }}
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Préparer l'environnement
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+      - name: Lancer les tests
+        env:
+          # phpunit.xml utilise SQLite en mémoire ; ces variables le remplacent pour la variante MySQL
+          DB_CONNECTION: ${{ matrix.base == 'mysql' && 'mysql' || 'sqlite' }}
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: ${{ matrix.base == 'mysql' && 'solarshare_test' || ':memory:' }}
+          DB_USERNAME: root
+          DB_PASSWORD: root
+        run: php artisan test --coverage-clover=coverage.xml --log-junit=junit.xml
+      - name: Publier les rapports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapports-${{ matrix.base }}
+          path: |
+            coverage.xml
+            junit.xml
+
+  # ------------------------------------------------------------------ SonarCloud (si configuré)
+  sonar:
+    name: Analyse SonarCloud
+    runs-on: ubuntu-latest
+    needs: tests
+    if: ${{ vars.SONAR_ENABLED == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: rapports-sqlite
+      - uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  # ------------------------------------------------------------------ image Docker
+  docker:
+    name: Image Docker
+    runs-on: ubuntu-latest
+    needs: [qualite, tests]
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Connexion à GitHub Container Registry
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Étiquettes de l'image
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/solarshare
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=
+            type=semver,pattern={{version}}
+      - name: Construire (et publier sur main, develop et les tags)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags/')) }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ------------------------------------------------------------------ test de fumée de l'image
+  smoke:
+    name: Démarrage de l'image (docker compose)
+    runs-on: ubuntu-latest
+    needs: docker
+    steps:
+      - uses: actions/checkout@v4
+      - name: Démarrer la pile
+        run: |
+          echo "APP_KEY=base64:$(openssl rand -base64 32)" > .env
+          docker compose up -d --build --wait --wait-timeout 300 app
+      - name: Vérifier que le site répond
+        run: |
+          curl -fsS http://localhost:8080/up
+          curl -fsS -o /dev/null -w "%{http_code}\n" http://localhost:8080/login | grep 200
+          curl -fsS -H "Authorization: Bearer changez-moi" http://localhost:8080/metrics | grep "solarshare_up 1"
+      - name: Journaux en cas d'échec
+        if: failure()
+        run: docker compose logs app db
