@@ -6,7 +6,7 @@ use App\Models\Communaute;
 use App\Models\User;
 use App\Policies\Concerns\AdminBypass;
 
-/** Les communautés sont visibles par tous mais gérées par les administrateurs. */
+/** Les communautés sont visibles par tous ; les gérer demande la permission Spatie "gerer-communautes". */
 class CommunautePolicy
 {
     use AdminBypass;
@@ -23,16 +23,16 @@ class CommunautePolicy
 
     public function create(User $user): bool
     {
-        return false;
+        return $user->can('gerer-communautes');
     }
 
     public function update(User $user, Communaute $communaute): bool
     {
-        return false;
+        return $user->can('gerer-communautes');
     }
 
     public function delete(User $user, Communaute $communaute): bool
     {
-        return false;
+        return $user->can('gerer-communautes');
     }
 }

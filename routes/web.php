@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommunauteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EchangeController;
@@ -10,23 +9,26 @@ use App\Http\Controllers\OffreController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserPhotoController;
 use Illuminate\Support\Facades\Route;
 
-// Visiteurs : connexion et inscription
-Route::middleware('guest')->group(function () {
-    Route::get('login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('login', [AuthController::class, 'login'])->middleware('throttle:5,1');
-    Route::get('register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('register', [AuthController::class, 'register'])->middleware('throttle:10,1');
+/*
+ * Connexion, inscription, déconnexion, mot de passe oublié, vérification d'e-mail,
+ * double authentification et confirmation du mot de passe : routes fournies par Laravel Fortify
+ * (vues déclarées dans App\Providers\FortifyServiceProvider).
+ */
+
+// Connecté, mais e-mail pas forcément vérifié : profil (pour corriger son e-mail) et photos
+Route::middleware('auth')->group(function () {
+    Route::get('profil', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('profil/confirmer', [ProfileController::class, 'confirm'])->name('profile.confirm');
+    Route::delete('profil', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('users/{user}/photo', UserPhotoController::class)->name('users.photo');
 });
 
-// Utilisateurs connectés
-Route::middleware('auth')->group(function () {
-    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
-
+// Connecté avec un e-mail vérifié
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('profil', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('profil', [ProfileController::class, 'update'])->name('profile.update');
 
     Route::resource('communautes', CommunauteController::class);
     Route::resource('echanges', EchangeController::class);
@@ -35,6 +37,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('productions', ProductionController::class);
     Route::resource('offres', OffreController::class);
 
-    // Réservé aux administrateurs (contrôlé par UserPolicy)
-    Route::resource('users', UserController::class);
+    // Réservé aux administrateurs : permission Spatie + UserPolicy (double contrôle côté serveur)
+    Route::resource('users', UserController::class)->middleware('permission:gerer-utilisateurs');
 });

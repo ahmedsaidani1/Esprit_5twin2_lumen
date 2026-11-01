@@ -25,7 +25,9 @@ Route::name('api.')->group(function () {
         Route::get('stats', fn (Request $request, StatsService $stats) => response()->json($stats->summary($request->user())))->name('stats');
         // Les e-mails ne sont visibles que par les administrateurs ; les membres n'ont besoin que des noms.
         Route::get('users', fn (Request $request) => response()->json(
-            User::select($request->user()->isAdmin() ? ['id', 'name', 'email', 'role'] : ['id', 'name'])->orderBy('name')->get()
+            $request->user()->isAdmin()
+                ? User::with('roles')->orderBy('name')->get()->map(fn ($u) => $u->only('id', 'name', 'email') + ['role' => $u->role])
+                : User::select('id', 'name')->orderBy('name')->get()
         ))->name('users');
 
         Route::apiResources([

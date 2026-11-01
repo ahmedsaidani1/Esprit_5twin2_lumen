@@ -121,28 +121,28 @@ class UsersAndPermissionsTest extends TestCase
     {
         $this->actingAs($this->alice)->get('/profil')->assertOk();
 
-        $this->put('/profil', ['name' => 'Alice 2', 'email' => $this->alice->email])->assertRedirect('/profil');
+        $this->from('/profil')->put('/user/profile-information', ['name' => 'Alice 2', 'email' => $this->alice->email])
+            ->assertRedirect('/profil')->assertSessionHasNoErrors();
         $this->assertSame('Alice 2', $this->alice->fresh()->name);
 
         // changer le mot de passe exige l'ancien
-        $this->put('/profil', [
-            'name' => 'Alice 2', 'email' => $this->alice->email,
-            'password' => 'newsecret1', 'password_confirmation' => 'newsecret1',
-        ])->assertSessionHasErrors('current_password');
+        $this->from('/profil')->put('/user/password', [
+            'current_password' => 'wrong', 'password' => 'newsecret1', 'password_confirmation' => 'newsecret1',
+        ])->assertSessionHasErrorsIn('updatePassword', 'current_password');
 
-        $this->put('/profil', [
-            'name' => 'Alice 2', 'email' => $this->alice->email, 'current_password' => 'password',
-            'password' => 'newsecret1', 'password_confirmation' => 'newsecret1',
+        $this->from('/profil')->put('/user/password', [
+            'current_password' => 'password', 'password' => 'newsecret1', 'password_confirmation' => 'newsecret1',
         ])->assertSessionHasNoErrors();
         $this->assertTrue(\Hash::check('newsecret1', $this->alice->fresh()->password));
     }
 
     public function test_profile_cannot_change_the_role(): void
     {
-        $this->actingAs($this->alice)->put('/profil', [
+        $this->actingAs($this->alice)->put('/user/profile-information', [
             'name' => 'Alice', 'email' => $this->alice->email, 'role' => 'admin',
         ]);
         $this->assertSame('membre', $this->alice->fresh()->role);
+        $this->assertFalse($this->alice->fresh()->isAdmin());
     }
 
     // ---------- Gestion des utilisateurs (admin) ----------
@@ -192,13 +192,19 @@ class UsersAndPermissionsTest extends TestCase
         $this->assertSame('admin', $this->admin->fresh()->role);
     }
 
-    public function test_user_with_installations_or_exchanges_cannot_be_deleted(): void
+    public function test_user_with_exchanges_cannot_be_deleted_but_installations_cascade(): void
     {
-        $this->actingAs($this->admin);
+        $this->actingAs($this->bob)->post('/echanges', $this->echangePayload());
 
-        $this->delete("/users/{$this->alice->id}")->assertSessionHasErrors('user'); // possède une installation
+        $this->actingAs($this->admin);
+        $this->delete("/users/{$this->alice->id}")->assertSessionHasErrors('user'); // vendeuse d'un échange
         $this->assertModelExists($this->alice);
-        $this->assertSame(1, Installation::count());
+
+        // Carol n'a pas d'échange : son compte et son installation partent ensemble
+        $toit = Installation::create(['user_id' => $this->carol->id, 'nom' => 'Toit Carol', 'type' => 'solaire', 'puissance_kw' => 3]);
+        $this->delete("/users/{$this->carol->id}")->assertRedirect('/users');
+        $this->assertModelMissing($this->carol);
+        $this->assertModelMissing($toit);
     }
 
     // ---------- Installations / productions / offres : propriétaire seulement ----------

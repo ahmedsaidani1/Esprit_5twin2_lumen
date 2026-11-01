@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Communaute;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 /** Gestion des utilisateurs, réservée aux administrateurs (voir UserPolicy). */
@@ -25,7 +26,7 @@ class UserController extends Controller
     {
         $this->authorize('viewAny', User::class);
 
-        $users = User::with('communaute')->withCount('installations')
+        $users = User::with('communaute', 'roles')->withCount('installations')
             ->filtre($request->query())->orderBy('name')->paginate(10)->withQueryString();
         return view('users.index', compact('users'));
     }
@@ -39,7 +40,10 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $this->authorize('create', User::class);
-        User::create($request->validate($this->rules()));
+        $data = $request->validate($this->rules());
+        $user = User::create($data);
+        $user->forceFill(['email_verified_at' => now()])->save(); // compte créé par un admin : e-mail considéré vérifié
+        $user->syncRoles([$data['role']]);
         return redirect()->route('users.index')->with('success', 'Utilisateur créé avec succès.');
     }
 
@@ -71,6 +75,7 @@ class UserController extends Controller
         }
 
         $user->update($data);
+        $user->syncRoles([$data['role']]);
         return redirect()->route('users.index')->with('success', 'Utilisateur modifié avec succès.');
     }
 
@@ -78,12 +83,15 @@ class UserController extends Controller
     {
         $this->authorize('delete', $user);
 
-        // Les clés étrangères supprimeraient en cascade ses installations et ses échanges : on refuse.
-        if ($user->installations()->exists() || $user->echangesVendus()->exists() || $user->echangesAchetes()->exists()) {
-            return back()->withErrors(['user' => 'Impossible de supprimer : cet utilisateur possède des installations ou des échanges.']);
+        // Les échanges et leurs factures sont des pièces comptables : on ne les supprime pas en cascade.
+        if ($user->aDesEchanges()) {
+            return back()->withErrors(['user' => 'Impossible de supprimer : cet utilisateur a des échanges.']);
         }
 
-        $user->delete();
+        if ($user->photo_path) {
+            Storage::disk('local')->delete($user->photo_path);
+        }
+        $user->delete(); // installations, productions, offres, compteurs et relevés suivent en cascade
         return redirect()->route('users.index')->with('success', 'Utilisateur supprimé.');
     }
 }

@@ -46,6 +46,21 @@
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
+    @if(session('status'))
+        @php
+            // Statuts renvoyés par Fortify (les autres sont déjà des phrases traduites)
+            $statuts = [
+                'profile-information-updated' => 'Profil mis à jour.',
+                'password-updated' => 'Mot de passe modifié.',
+                'two-factor-authentication-enabled' => 'Double authentification en cours d\'activation : scannez le QR code puis saisissez un code.',
+                'two-factor-authentication-confirmed' => 'Double authentification activée.',
+                'two-factor-authentication-disabled' => 'Double authentification désactivée.',
+                'recovery-codes-generated' => 'Nouveaux codes de récupération générés.',
+                'verification-link-sent' => 'Un nouveau lien de vérification vous a été envoyé.',
+            ];
+        @endphp
+        <div class="alert alert-info">{{ $statuts[session('status')] ?? session('status') }}</div>
+    @endif
     @if($errors->any())
         <div class="alert alert-danger">
             <ul class="mb-0">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>

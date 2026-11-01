@@ -4,11 +4,14 @@ namespace App\Policies\Concerns;
 
 use App\Models\User;
 
-/** Un administrateur peut tout faire ; les autres passent par les méthodes de la policy. */
+/**
+ * Un utilisateur ayant la permission Spatie "voir-toutes-les-donnees" (le rôle admin)
+ * peut tout faire ; les autres passent par les méthodes de la policy.
+ */
 trait AdminBypass
 {
     public function before(User $user): ?bool
     {
-        return $user->isAdmin() ? true : null;
+        return $user->hasPermissionTo('voir-toutes-les-donnees') ? true : null;
     }
 }

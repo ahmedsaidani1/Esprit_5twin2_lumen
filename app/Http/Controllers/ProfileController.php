@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Communaute;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
-/** Profil de l'utilisateur connecté : il ne modifie que son propre compte, jamais son rôle. */
+/**
+ * Page "Mon profil". Les mises à jour (informations, photo, mot de passe, 2FA)
+ * passent par les routes Fortify ; ce contrôleur affiche la page et gère la suppression du compte.
+ */
 class ProfileController extends Controller
 {
     public function edit(Request $request)
@@ -17,25 +21,43 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function update(Request $request)
+    /** Envoie vers la confirmation du mot de passe de Fortify, puis revient sur la section 2FA du profil. */
+    public function confirm()
     {
-        $user = $request->user();
+        redirect()->setIntendedUrl(route('profile.edit') . '#2fa');
 
-        $data = $request->validate([
-            'name'             => 'required|string|max:255',
-            'email'            => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
-            'communaute_id'    => 'nullable|exists:communautes,id',
-            'password'         => 'nullable|string|min:8|confirmed',
-            'current_password' => 'required_with:password|nullable|current_password',
+        return redirect()->route('password.confirm');
+    }
+
+    public function destroy(Request $request)
+    {
+        $request->validateWithBag('deleteAccount', [
+            'password' => ['required', 'current_password'],
         ]);
 
-        unset($data['current_password']);
-        if (empty($data['password'])) {
-            unset($data['password']);
+        $user = $request->user();
+
+        // Les échanges (et leurs factures) sont des pièces comptables : on ne les supprime pas.
+        if ($user->aDesEchanges()) {
+            return back()->withErrors(['password' => 'Votre compte a des échanges et ne peut pas être supprimé.'], 'deleteAccount');
         }
 
-        $user->update($data);
+        // On ne laisse pas la plateforme sans administrateur.
+        if ($user->isAdmin() && \App\Models\User::role('admin')->count() === 1) {
+            return back()->withErrors(['password' => 'Vous êtes le dernier administrateur : nommez-en un autre avant.'], 'deleteAccount');
+        }
 
-        return redirect()->route('profile.edit')->with('success', 'Profil mis à jour.');
+        Auth::logout();
+
+        if ($user->photo_path) {
+            Storage::disk('local')->delete($user->photo_path);
+        }
+        $user->tokens()->delete();
+        $user->delete(); // installations, productions, offres, compteurs et relevés suivent (clés étrangères en cascade)
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->with('status', 'Votre compte a été supprimé.');
     }
 }

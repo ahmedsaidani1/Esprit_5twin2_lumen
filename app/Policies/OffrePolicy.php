@@ -23,7 +23,7 @@ class OffrePolicy
 
     public function create(User $user): bool
     {
-        return true;
+        return $user->can('publier-offres');
     }
 
     public function update(User $user, Offre $offre): bool

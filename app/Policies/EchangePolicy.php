@@ -23,7 +23,7 @@ class EchangePolicy
 
     public function create(User $user): bool
     {
-        return true;
+        return $user->can('acheter-energie');
     }
 
     public function update(User $user, Echange $echange): bool
