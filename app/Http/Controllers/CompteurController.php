@@ -6,6 +6,7 @@ use App\Models\Compteur;
 use App\Models\Installation;
 use App\Models\User;
 use App\Services\CompteurService;
+use App\Services\Ia\AnalyseConsommationService;
 use Illuminate\Http\Request;
 
 class CompteurController extends Controller
@@ -54,7 +55,7 @@ class CompteurController extends Controller
         return redirect()->route('compteurs.show', $compteur)->with('success', 'Compteur créé avec succès.');
     }
 
-    public function show(Compteur $compteur)
+    public function show(Compteur $compteur, AnalyseConsommationService $ia)
     {
         $this->authorize('view', $compteur);
         $compteur->load('proprietaire', 'installation');
@@ -62,6 +63,9 @@ class CompteurController extends Controller
         return view('compteurs.show', [
             'compteur' => $compteur,
             'releves' => $compteur->consommations()->latest('date')->limit(10)->get(),
+            'serie' => $ia->serie($compteur),
+            'anomalies' => $ia->anomalies($compteur),
+            'prevision' => $ia->prevoir($compteur),
         ]);
     }
 

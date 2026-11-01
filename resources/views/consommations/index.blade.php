@@ -4,6 +4,7 @@
 <div class="d-flex justify-content-between mb-3">
     <h2>Relevés de consommation</h2>
     <div class="d-flex gap-2">
+        <a href="{{ route('consommations.export', request()->query()) }}" class="btn btn-outline-secondary">Exporter en CSV</a>
         @can('create', \App\Models\Consommation::class)
         <a href="{{ route('consommations.create') }}" class="btn btn-success">+ Nouveau relevé</a>
         @endcan
