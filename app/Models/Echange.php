@@ -3,10 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Echange extends Model
 {
+    /** @use HasFactory<\Database\Factories\EchangeFactory> */
+    use HasFactory;
+
     public const STATUTS = ['propose', 'accepte', 'refuse', 'termine'];
 
     protected $fillable = [

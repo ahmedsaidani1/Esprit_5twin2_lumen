@@ -3,10 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Installation extends Model
 {
+    /** @use HasFactory<\Database\Factories\InstallationFactory> */
+    use HasFactory;
+
     public const TYPES = ['solaire', 'eolien', 'hydraulique', 'autre'];
 
     protected $fillable = ['user_id', 'communaute_id', 'nom', 'type', 'puissance_kw', 'localisation'];

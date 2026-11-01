@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\CommunauteController;
+use App\Http\Controllers\CompteurController;
+use App\Http\Controllers\ConsommationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EchangeController;
 use App\Http\Controllers\FactureController;
@@ -36,6 +38,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('installations', InstallationController::class);
     Route::resource('productions', ProductionController::class);
     Route::resource('offres', OffreController::class);
+    Route::resource('compteurs', CompteurController::class);
+    Route::resource('consommations', ConsommationController::class);
 
     // Réservé aux administrateurs : permission Spatie + UserPolicy (double contrôle côté serveur)
     Route::resource('users', UserController::class)->middleware('permission:gerer-utilisateurs');

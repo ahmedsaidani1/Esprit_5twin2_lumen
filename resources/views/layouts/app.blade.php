@@ -19,6 +19,8 @@
                 <a class="nav-link" href="{{ route('installations.index') }}">Installations</a>
                 <a class="nav-link" href="{{ route('productions.index') }}">Productions</a>
                 <a class="nav-link" href="{{ route('offres.index') }}">Offres</a>
+                <a class="nav-link" href="{{ route('compteurs.index') }}">Compteurs</a>
+                <a class="nav-link" href="{{ route('consommations.index') }}">Consommations</a>
                 @can('viewAny', \App\Models\User::class)
                     <a class="nav-link" href="{{ route('users.index') }}">Utilisateurs</a>
                 @endcan

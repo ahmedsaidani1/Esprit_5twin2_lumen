@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CommunauteController;
+use App\Http\Controllers\Api\CompteurController;
+use App\Http\Controllers\Api\ConsommationController;
 use App\Http\Controllers\Api\EchangeController;
 use App\Http\Controllers\Api\FactureController;
 use App\Http\Controllers\Api\InstallationController;
@@ -37,6 +39,8 @@ Route::name('api.')->group(function () {
             'offres'        => OffreController::class,
             'echanges'      => EchangeController::class,
             'factures'      => FactureController::class,
+            'compteurs'     => CompteurController::class,
+            'consommations' => ConsommationController::class,
         ]);
     });
 });
