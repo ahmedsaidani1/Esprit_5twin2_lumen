@@ -3,6 +3,33 @@
 @section('content')
 <h2 class="mb-3">Tableau de bord</h2>
 
+@if($alertes->isNotEmpty())
+    <div class="alert alert-danger">
+        <strong>⚠ Consommation inhabituelle détectée par l'IA :</strong>
+        @foreach($alertes as $a)
+            <a href="{{ route('compteurs.show', $a['compteur']) }}" class="alert-link">{{ $a['compteur']->reference }}</a>
+            le {{ \Carbon\Carbon::parse($a['date'])->format('d/m') }} ({{ $a['sens'] }}, {{ number_format($a['kwh'], 1) }} kWh)@if(!$loop->last), @endif
+        @endforeach
+    </div>
+@endif
+
+@if($recommandations->isNotEmpty())
+    <div class="card card-body mb-4 border-success">
+        <h5>💡 Offres recommandées pour vous</h5>
+        <div class="row g-2">
+            @foreach($recommandations as $r)
+                <div class="col-md-4">
+                    <div class="border rounded p-2 h-100">
+                        <a href="{{ route('offres.show', $r['offre']) }}">{{ $r['offre']->installation->nom }}</a><br>
+                        {{ number_format($r['offre']->quantite_kwh, 0) }} kWh à {{ number_format($r['offre']->prix_kwh, 4) }} DT/kWh
+                        <div class="small text-muted">{{ implode(' · ', $r['raisons']) }}</div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+@endif
+
 <div class="row g-3 mb-4">
     @foreach([
         ['Communautés', $stats['compteurs']['communautes'], 'communautes.index'],

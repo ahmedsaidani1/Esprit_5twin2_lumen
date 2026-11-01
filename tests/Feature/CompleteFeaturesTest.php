@@ -105,7 +105,8 @@ class CompleteFeaturesTest extends TestCase
         $html = $this->get('/offres/create')->assertOk()->getContent();
         $this->assertStringContainsString('required', $html);
         $this->assertStringContainsString('min="0.01"', $html);
-        $this->assertStringNotContainsString('<script', $html);
+        // aucun script écrit dans la page (seul le script Bootstrap du menu est chargé, par une balise src)
+        $this->assertDoesNotMatchRegularExpression('/<script(?![^>]*\bsrc=)/', $html);
 
         $this->get('/communautes/create')->assertOk()->assertSee('maxlength="255"', false);
     }

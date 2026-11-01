@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+
+    // Jeton exigé par la route /metrics (Prometheus)
+    'metrics' => [
+        'token' => env('METRICS_TOKEN'),
+    ],
+
 ];

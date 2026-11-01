@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\CompteurController;
 use App\Http\Controllers\Api\ConsommationController;
 use App\Http\Controllers\Api\EchangeController;
 use App\Http\Controllers\Api\FactureController;
+use App\Http\Controllers\Api\IaController;
 use App\Http\Controllers\Api\InstallationController;
 use App\Http\Controllers\Api\OffreController;
 use App\Http\Controllers\Api\ProductionController;
@@ -31,6 +32,15 @@ Route::name('api.')->group(function () {
                 ? User::with('roles')->orderBy('name')->get()->map(fn ($u) => $u->only('id', 'name', 'email') + ['role' => $u->role])
                 : User::select('id', 'name')->orderBy('name')->get()
         ))->name('users');
+
+        // Fonctionnalités d'IA des trois membres
+        Route::prefix('ia')->name('ia.')->middleware('permission:utiliser-ia')->group(function () {
+            Route::get('factures/{facture}/risque', [IaController::class, 'risqueFacture'])->name('risque');
+            Route::get('recommandations', [IaController::class, 'recommandations'])->name('recommandations');
+            Route::get('installations/{installation}/prevision', [IaController::class, 'previsionInstallation'])->name('prevision');
+            Route::get('compteurs/{compteur}/analyse', [IaController::class, 'analyseCompteur'])->name('analyse');
+            Route::get('conseils', [IaController::class, 'conseils'])->name('conseils');
+        });
 
         Route::apiResources([
             'communautes'   => CommunauteController::class,
