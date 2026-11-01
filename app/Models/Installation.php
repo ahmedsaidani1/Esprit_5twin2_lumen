@@ -35,6 +35,11 @@ class Installation extends Model
         return $this->hasMany(Offre::class);
     }
 
+    public function compteurs()
+    {
+        return $this->hasMany(Compteur::class);
+    }
+
     /**
      * Énergie encore proposable à la vente : total produit moins les quantités
      * déjà engagées dans des offres disponibles ou réservées.

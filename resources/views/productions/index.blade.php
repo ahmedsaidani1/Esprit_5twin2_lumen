@@ -3,7 +3,10 @@
 @section('content')
 <div class="d-flex justify-content-between mb-3">
     <h2>Liste des productions</h2>
-    <a href="{{ route('productions.create') }}" class="btn btn-success">+ Nouvelle production</a>
+    <div class="d-flex gap-2">
+        <a href="{{ route('productions.export', request()->query()) }}" class="btn btn-outline-secondary">Exporter en CSV</a>
+        <a href="{{ route('productions.create') }}" class="btn btn-success">+ Nouvelle production</a>
+    </div>
 </div>
 <form method="GET" class="row g-2 mb-3" data-autofilter>
     <div class="col-md-3">

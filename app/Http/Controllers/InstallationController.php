@@ -6,6 +6,7 @@ use App\Models\Communaute;
 use App\Models\Installation;
 use App\Models\User;
 use App\Services\AccessService;
+use App\Services\Ia\PrevisionProductionService;
 use Illuminate\Http\Request;
 
 class InstallationController extends Controller
@@ -59,11 +60,19 @@ class InstallationController extends Controller
         return redirect()->route('installations.index')->with('success', 'Installation créée avec succès.');
     }
 
-    public function show(Installation $installation)
+    public function show(Request $request, Installation $installation, PrevisionProductionService $ia)
     {
         $this->authorize('view', $installation);
-        $installation->load('proprietaire', 'communaute', 'productions', 'offres');
-        return view('installations.show', compact('installation'));
+        $installation->load('proprietaire', 'communaute', 'offres');
+
+        return view('installations.show', [
+            'installation' => $installation,
+            'totalProduit' => (float) $installation->productions()->sum('energie_produite_kwh'),
+            'dernieresProductions' => $installation->productions()->latest('date')->limit(10)->get(),
+            'prevision' => $ia->prevoir($installation),
+            // la suggestion d'offre ne concerne que le propriétaire (ou l'admin)
+            'suggestion' => $request->user()->can('update', $installation) ? $ia->suggererOffre($installation) : null,
+        ]);
     }
 
     public function edit(Request $request, Installation $installation)

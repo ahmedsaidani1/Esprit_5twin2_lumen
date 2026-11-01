@@ -13,13 +13,13 @@
     <div class="col-md-3">
         <label class="form-label">Quantité (kWh)</label>
         <input type="number" step="0.01" name="quantite_kwh" class="form-control @error('quantite_kwh') is-invalid @enderror"
-               value="{{ old('quantite_kwh', $o->quantite_kwh ?? '') }}" required min="0.01">
+               value="{{ old('quantite_kwh', $o->quantite_kwh ?? request('quantite_kwh')) }}" required min="0.01">
         @error('quantite_kwh')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
     <div class="col-md-3">
         <label class="form-label">Prix (par kWh)</label>
         <input type="number" step="0.0001" name="prix_kwh" class="form-control @error('prix_kwh') is-invalid @enderror"
-               value="{{ old('prix_kwh', $o->prix_kwh ?? '') }}" required min="0">
+               value="{{ old('prix_kwh', $o->prix_kwh ?? request('prix_kwh')) }}" required min="0">
         @error('prix_kwh')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
     <div class="col-md-4">
