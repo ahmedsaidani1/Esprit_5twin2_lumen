@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -14,7 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, HasRoles, Notifiable, TwoFactorAuthenticatable;
 
     /** Rôles gérés par Spatie Permission (voir la migration move_roles_to_spatie_permission). */
@@ -79,27 +81,27 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->photo_path ? route('users.photo', ['user' => $this->id, 'v' => md5($this->photo_path)]) : null;
     }
 
-    public function communaute()
+    public function communaute(): BelongsTo
     {
         return $this->belongsTo(Communaute::class);
     }
 
-    public function installations()
+    public function installations(): HasMany
     {
         return $this->hasMany(Installation::class);
     }
 
-    public function compteurs()
+    public function compteurs(): HasMany
     {
         return $this->hasMany(Compteur::class);
     }
 
-    public function echangesVendus()
+    public function echangesVendus(): HasMany
     {
         return $this->hasMany(Echange::class, 'vendeur_id');
     }
 
-    public function echangesAchetes()
+    public function echangesAchetes(): HasMany
     {
         return $this->hasMany(Echange::class, 'acheteur_id');
     }

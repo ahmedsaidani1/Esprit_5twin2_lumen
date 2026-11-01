@@ -9,9 +9,7 @@ use Illuminate\Http\Request;
 
 class ConsommationController extends Controller
 {
-    public function __construct(private ConsommationService $service)
-    {
-    }
+    public function __construct(private ConsommationService $service) {}
 
     /** Compteurs proposés dans les formulaires : ceux de l'utilisateur, actifs pour une saisie. */
     private function compteurs(Request $request, bool $actifsSeulement)
@@ -37,6 +35,7 @@ class ConsommationController extends Controller
     public function create(Request $request)
     {
         $this->authorize('create', Consommation::class);
+
         return view('consommations.create', ['compteurs' => $this->compteurs($request, true)]);
     }
 
@@ -44,6 +43,7 @@ class ConsommationController extends Controller
     {
         $this->authorize('create', Consommation::class);
         $this->service->create($request->validate($this->service->rules()), $request->user());
+
         return redirect()->route('consommations.index')->with('success', 'Relevé enregistré avec succès.');
     }
 
@@ -51,12 +51,14 @@ class ConsommationController extends Controller
     {
         $this->authorize('view', $consommation);
         $consommation->load('compteur.proprietaire');
+
         return view('consommations.show', compact('consommation'));
     }
 
     public function edit(Request $request, Consommation $consommation)
     {
         $this->authorize('update', $consommation);
+
         return view('consommations.edit', [
             'consommation' => $consommation,
             'compteurs' => $this->compteurs($request, false),
@@ -67,6 +69,7 @@ class ConsommationController extends Controller
     {
         $this->authorize('update', $consommation);
         $this->service->update($consommation, $request->validate($this->service->rules($consommation)), $request->user());
+
         return redirect()->route('consommations.index')->with('success', 'Relevé modifié avec succès.');
     }
 
@@ -74,6 +77,7 @@ class ConsommationController extends Controller
     {
         $this->authorize('delete', $consommation);
         $consommation->delete();
+
         return redirect()->route('consommations.index')->with('success', 'Relevé supprimé.');
     }
 }

@@ -13,19 +13,17 @@ class InstallationController extends CrudController
 
     protected array $with = ['proprietaire:id,name', 'communaute'];
 
-    public function __construct(private AccessService $access)
-    {
-    }
+    public function __construct(private AccessService $access) {}
 
     protected function rules(?Model $record = null): array
     {
         return [
-            'user_id'       => 'required|exists:users,id',
+            'user_id' => 'required|exists:users,id',
             'communaute_id' => 'nullable|exists:communautes,id',
-            'nom'           => 'required|string|max:255',
-            'type'          => 'required|in:' . implode(',', Installation::TYPES),
-            'puissance_kw'  => 'required|numeric|min:0.01',
-            'localisation'  => 'nullable|string|max:255',
+            'nom' => 'required|string|max:255',
+            'type' => 'required|in:'.implode(',', Installation::TYPES),
+            'puissance_kw' => 'required|numeric|min:0.01',
+            'localisation' => 'nullable|string|max:255',
         ];
     }
 

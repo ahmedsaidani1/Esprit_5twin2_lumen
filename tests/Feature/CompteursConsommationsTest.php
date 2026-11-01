@@ -15,6 +15,7 @@ class CompteursConsommationsTest extends TestCase
     use RefreshDatabase;
 
     private User $alice;
+
     private User $bob;
 
     protected function setUp(): void
@@ -164,7 +165,7 @@ class CompteursConsommationsTest extends TestCase
 
     public function test_api_crud_and_rules(): void
     {
-        $token = ['Authorization' => 'Bearer ' . $this->alice->createToken('t')->plainTextToken];
+        $token = ['Authorization' => 'Bearer '.$this->alice->createToken('t')->plainTextToken];
 
         $id = $this->postJson('/api/compteurs', $this->compteurPayload(), $token)
             ->assertCreated()->assertJsonPath('user_id', $this->alice->id)->json('id');
@@ -178,7 +179,7 @@ class CompteursConsommationsTest extends TestCase
         $this->deleteJson("/api/compteurs/$id", [], $token)->assertStatus(422); // a des relevés
 
         $this->app['auth']->forgetGuards();
-        $bob = ['Authorization' => 'Bearer ' . $this->bob->createToken('t')->plainTextToken];
+        $bob = ['Authorization' => 'Bearer '.$this->bob->createToken('t')->plainTextToken];
         $this->getJson("/api/compteurs/$id", $bob)->assertForbidden();
         $this->getJson('/api/consommations', $bob)->assertOk()->assertJsonCount(0, 'data');
     }

@@ -2,40 +2,43 @@
 
 namespace App\Models;
 
+use Database\Factories\InstallationFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Installation extends Model
 {
-    /** @use HasFactory<\Database\Factories\InstallationFactory> */
+    /** @use HasFactory<InstallationFactory> */
     use HasFactory;
 
     public const TYPES = ['solaire', 'eolien', 'hydraulique', 'autre'];
 
     protected $fillable = ['user_id', 'communaute_id', 'nom', 'type', 'puissance_kw', 'localisation'];
 
-    public function proprietaire()
+    public function proprietaire(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function communaute()
+    public function communaute(): BelongsTo
     {
         return $this->belongsTo(Communaute::class);
     }
 
-    public function productions()
+    public function productions(): HasMany
     {
         return $this->hasMany(Production::class);
     }
 
-    public function offres()
+    public function offres(): HasMany
     {
         return $this->hasMany(Offre::class);
     }
 
-    public function compteurs()
+    public function compteurs(): HasMany
     {
         return $this->hasMany(Compteur::class);
     }

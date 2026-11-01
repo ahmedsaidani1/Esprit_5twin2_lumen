@@ -13,13 +13,11 @@ final class RegressionLineaire
     /** @var list<float> coefficients, le premier est l'ordonnée à l'origine */
     private array $beta = [];
 
-    public function __construct(private float $lambda = 1e-6)
-    {
-    }
+    public function __construct(private float $lambda = 1e-6) {}
 
     /**
-     * @param list<list<float>> $X une ligne par observation
-     * @param list<float> $y
+     * @param  list<list<float>>  $X  une ligne par observation
+     * @param  list<float>  $y
      */
     public function entrainer(array $X, array $y): self
     {
@@ -58,6 +56,7 @@ final class RegressionLineaire
         foreach (array_values($x) as $j => $v) {
             $res += ($this->beta[$j + 1] ?? 0.0) * $v;
         }
+
         return $res;
     }
 
@@ -70,6 +69,7 @@ final class RegressionLineaire
             $ssRes += ($y[$i] - $this->predire($x)) ** 2;
             $ssTot += ($y[$i] - $moy) ** 2;
         }
+
         return $ssTot > 0 ? 1 - $ssRes / $ssTot : 0.0;
     }
 
@@ -116,6 +116,7 @@ final class RegressionLineaire
             }
             $x[$l] = $s / $A[$l][$l];
         }
+
         return $x;
     }
 }

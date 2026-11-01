@@ -11,18 +11,16 @@ use Illuminate\Validation\ValidationException;
 /** Règles des compteurs, partagées par l'interface web et l'API. */
 class CompteurService
 {
-    public function __construct(private AccessService $access)
-    {
-    }
+    public function __construct(private AccessService $access) {}
 
     public function rules(?Compteur $compteur = null): array
     {
         return [
-            'user_id'           => 'required|exists:users,id',
-            'installation_id'   => 'nullable|exists:installations,id',
-            'reference'         => ['required', 'string', 'max:50', Rule::unique('compteurs', 'reference')->ignore($compteur?->id)],
+            'user_id' => 'required|exists:users,id',
+            'installation_id' => 'nullable|exists:installations,id',
+            'reference' => ['required', 'string', 'max:50', Rule::unique('compteurs', 'reference')->ignore($compteur?->id)],
             'date_installation' => 'required|date|before_or_equal:today',
-            'statut'            => 'required|in:' . implode(',', Compteur::STATUTS),
+            'statut' => 'required|in:'.implode(',', Compteur::STATUTS),
         ];
     }
 
@@ -35,6 +33,7 @@ class CompteurService
     public function create(array $data): Compteur
     {
         $this->checkInstallation($data);
+
         return Compteur::create($data);
     }
 
@@ -42,6 +41,7 @@ class CompteurService
     {
         $this->checkInstallation($data);
         $compteur->update($data);
+
         return $compteur;
     }
 
@@ -63,7 +63,7 @@ class CompteurService
             return;
         }
 
-        if (!Installation::whereKey($data['installation_id'])->where('user_id', $data['user_id'])->exists()) {
+        if (! Installation::whereKey($data['installation_id'])->where('user_id', $data['user_id'])->exists()) {
             throw ValidationException::withMessages([
                 'installation_id' => 'L\'installation doit appartenir au propriétaire du compteur.',
             ]);

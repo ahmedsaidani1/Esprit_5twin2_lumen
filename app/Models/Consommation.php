@@ -2,20 +2,22 @@
 
 namespace App\Models;
 
+use Database\Factories\ConsommationFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Consommation extends Model
 {
-    /** @use HasFactory<\Database\Factories\ConsommationFactory> */
+    /** @use HasFactory<ConsommationFactory> */
     use HasFactory;
 
     protected $fillable = ['compteur_id', 'date', 'energie_consommee_kwh'];
 
     protected $casts = ['date' => 'date'];
 
-    public function compteur()
+    public function compteur(): BelongsTo
     {
         return $this->belongsTo(Compteur::class);
     }

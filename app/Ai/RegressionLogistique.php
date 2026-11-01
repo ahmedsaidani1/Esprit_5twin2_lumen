@@ -14,9 +14,12 @@ final class RegressionLogistique
 {
     /** @var list<float> */
     private array $poids = [];
+
     private float $biais = 0.0;
+
     /** @var list<float> */
     private array $moyennes = [];
+
     /** @var list<float> */
     private array $ecarts = [];
 
@@ -27,12 +30,11 @@ final class RegressionLogistique
         // Classes déséquilibrées (ex. 25 % d'impayés) : chaque classe pèse autant dans l'apprentissage,
         // sinon le modèle prédit presque toujours la classe majoritaire.
         private bool $equilibrerClasses = false,
-    ) {
-    }
+    ) {}
 
     /**
-     * @param list<list<float>> $X
-     * @param list<int> $y 0 ou 1
+     * @param  list<list<float>>  $X
+     * @param  list<int>  $y  0 ou 1
      */
     public function entrainer(array $X, array $y): self
     {
@@ -87,6 +89,7 @@ final class RegressionLogistique
     public function contributions(array $x): array
     {
         $z = $this->standardiserLigne($x);
+
         return array_map(fn ($w, $v) => $w * $v, $this->poids, $z);
     }
 
@@ -127,11 +130,12 @@ final class RegressionLogistique
 
     public static function depuisTableau(array $d): self
     {
-        $m = new self();
+        $m = new self;
         $m->poids = $d['poids'];
         $m->biais = $d['biais'];
         $m->moyennes = $d['moyennes'];
         $m->ecarts = $d['ecarts'];
+
         return $m;
     }
 
@@ -146,6 +150,7 @@ final class RegressionLogistique
         foreach ($z as $j => $v) {
             $s += $this->poids[$j] * $v;
         }
+
         return $s;
     }
 
@@ -168,6 +173,7 @@ final class RegressionLogistique
                 $gagnes += $sp > $sn ? 1 : ($sp == $sn ? 0.5 : 0);
             }
         }
+
         return $gagnes / (count($positifs) * count($negatifs));
     }
 }

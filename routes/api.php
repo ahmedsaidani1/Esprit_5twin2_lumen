@@ -43,13 +43,13 @@ Route::name('api.')->group(function () {
         });
 
         Route::apiResources([
-            'communautes'   => CommunauteController::class,
+            'communautes' => CommunauteController::class,
             'installations' => InstallationController::class,
-            'productions'   => ProductionController::class,
-            'offres'        => OffreController::class,
-            'echanges'      => EchangeController::class,
-            'factures'      => FactureController::class,
-            'compteurs'     => CompteurController::class,
+            'productions' => ProductionController::class,
+            'offres' => OffreController::class,
+            'echanges' => EchangeController::class,
+            'factures' => FactureController::class,
+            'compteurs' => CompteurController::class,
             'consommations' => ConsommationController::class,
         ]);
     });

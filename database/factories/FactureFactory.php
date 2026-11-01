@@ -3,10 +3,11 @@
 namespace Database\Factories;
 
 use App\Models\Echange;
+use App\Models\Facture;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<\App\Models\Facture>
+ * @extends Factory<Facture>
  */
 class FactureFactory extends Factory
 {

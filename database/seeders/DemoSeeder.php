@@ -163,6 +163,6 @@ class DemoSeeder extends Seeder
         app(AnalyseConsommationService::class)->oublierProfils();
         $this->command?->info($resultat['entraine']
             ? sprintf('Modèle de risque entraîné sur %d factures (AUC %.2f).', $resultat['exemples']['total'], $resultat['metriques']['auc'])
-            : 'Modèle de risque non entraîné : ' . $resultat['raison']);
+            : 'Modèle de risque non entraîné : '.$resultat['raison']);
     }
 }

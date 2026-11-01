@@ -3,6 +3,7 @@
 namespace App\Services\Ia;
 
 use App\Ai\RegressionLogistique;
+use App\Models\Echange;
 use App\Models\Facture;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -63,7 +64,7 @@ class RisqueImpayeService
     public function predire(Facture $facture): ?array
     {
         $donnees = $this->charger();
-        if (!$donnees) {
+        if (! $donnees) {
             return null;
         }
 
@@ -86,6 +87,7 @@ class RisqueImpayeService
     public function niveau(float $p): string
     {
         $seuils = config('ia.risque.seuils');
+
         return $p >= $seuils['eleve'] ? 'élevé' : ($p >= $seuils['moyen'] ? 'moyen' : 'faible');
     }
 
@@ -107,7 +109,7 @@ class RisqueImpayeService
             ->get(['statut', 'date_echeance']);
         $impayees = $passees->filter(fn ($f) => $f->statut === 'impayee' && $f->date_echeance->lt($facture->date_emission))->count();
 
-        $nbEchanges = \App\Models\Echange::where('acheteur_id', $acheteur->id)
+        $nbEchanges = Echange::where('acheteur_id', $acheteur->id)
             ->where('date_echange', '<', $echange->date_echange)->count();
 
         return [
@@ -134,6 +136,7 @@ class RisqueImpayeService
         if ($this->modele === null && Storage::disk('local')->exists(config('ia.risque.fichier'))) {
             $this->modele = json_decode(Storage::disk('local')->get(config('ia.risque.fichier')), true);
         }
+
         return $this->modele;
     }
 }

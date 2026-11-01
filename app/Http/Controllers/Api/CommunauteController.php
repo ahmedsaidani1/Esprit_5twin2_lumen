@@ -13,7 +13,7 @@ class CommunauteController extends CrudController
     protected function rules(?Model $record = null): array
     {
         return [
-            'nom'   => 'required|string|max:255',
+            'nom' => 'required|string|max:255',
             'ville' => 'nullable|string|max:255',
         ];
     }

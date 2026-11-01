@@ -8,9 +8,7 @@ use Illuminate\Notifications\Notification;
 /** Membre A — notification au vendeur : un acheteur propose un échange. */
 class DemandeAchatRecue extends Notification
 {
-    public function __construct(public Echange $echange)
-    {
-    }
+    public function __construct(public Echange $echange) {}
 
     public function via(object $notifiable): array
     {

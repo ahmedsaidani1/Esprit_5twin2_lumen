@@ -3,11 +3,12 @@
 namespace Database\Factories;
 
 use App\Models\Communaute;
+use App\Models\Echange;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<\App\Models\Echange>
+ * @extends Factory<Echange>
  */
 class EchangeFactory extends Factory
 {

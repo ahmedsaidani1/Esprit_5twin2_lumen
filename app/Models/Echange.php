@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use Database\Factories\EchangeFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Echange extends Model
 {
-    /** @use HasFactory<\Database\Factories\EchangeFactory> */
+    /** @use HasFactory<EchangeFactory> */
     use HasFactory;
 
     public const STATUTS = ['propose', 'accepte', 'refuse', 'termine'];
@@ -20,27 +23,27 @@ class Echange extends Model
 
     protected $casts = ['date_echange' => 'datetime'];
 
-    public function vendeur()
+    public function vendeur(): BelongsTo
     {
         return $this->belongsTo(User::class, 'vendeur_id');
     }
 
-    public function acheteur()
+    public function acheteur(): BelongsTo
     {
         return $this->belongsTo(User::class, 'acheteur_id');
     }
 
-    public function communaute()
+    public function communaute(): BelongsTo
     {
         return $this->belongsTo(Communaute::class);
     }
 
-    public function offre()
+    public function offre(): BelongsTo
     {
         return $this->belongsTo(Offre::class);
     }
 
-    public function facture()
+    public function facture(): HasOne
     {
         return $this->hasOne(Facture::class);
     }

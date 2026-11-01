@@ -32,23 +32,21 @@ abstract class CrudController extends Controller
     protected function modify(Model $record, array $data, User $actor): Model
     {
         $record->update($data);
+
         return $record;
     }
 
     protected function remove(Model $record): ?JsonResponse
     {
         $record->delete();
+
         return null;
     }
 
-    protected function beforeIndex(): void
-    {
-    }
+    protected function beforeIndex(): void {}
 
     /** Ajuste la requête avant validation (ex. imposer le propriétaire). */
-    protected function prepare(Request $request): void
-    {
-    }
+    protected function prepare(Request $request): void {}
 
     /** Restreint la liste aux enregistrements visibles par l'utilisateur. */
     protected function scopeFor(Builder $query, User $user): Builder

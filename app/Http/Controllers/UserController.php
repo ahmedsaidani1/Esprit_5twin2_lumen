@@ -14,11 +14,11 @@ class UserController extends Controller
     private function rules(?User $user = null): array
     {
         return [
-            'name'          => 'required|string|max:255',
-            'email'         => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user?->id)],
-            'role'          => 'required|in:' . implode(',', User::ROLES),
+            'name' => 'required|string|max:255',
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user?->id)],
+            'role' => 'required|in:'.implode(',', User::ROLES),
             'communaute_id' => 'nullable|exists:communautes,id',
-            'password'      => [$user ? 'nullable' : 'required', 'string', 'min:8', 'confirmed'],
+            'password' => [$user ? 'nullable' : 'required', 'string', 'min:8', 'confirmed'],
         ];
     }
 
@@ -28,12 +28,14 @@ class UserController extends Controller
 
         $users = User::with('communaute', 'roles')->withCount('installations')
             ->filtre($request->query())->orderBy('name')->paginate(10)->withQueryString();
+
         return view('users.index', compact('users'));
     }
 
     public function create()
     {
         $this->authorize('create', User::class);
+
         return view('users.create', ['communautes' => Communaute::orderBy('nom')->get()]);
     }
 
@@ -44,6 +46,7 @@ class UserController extends Controller
         $user = User::create($data);
         $user->forceFill(['email_verified_at' => now()])->save(); // compte créé par un admin : e-mail considéré vérifié
         $user->syncRoles([$data['role']]);
+
         return redirect()->route('users.index')->with('success', 'Utilisateur créé avec succès.');
     }
 
@@ -51,12 +54,14 @@ class UserController extends Controller
     {
         $this->authorize('view', $user);
         $user->load('communaute', 'installations')->loadCount(['echangesVendus', 'echangesAchetes']);
+
         return view('users.show', compact('user'));
     }
 
     public function edit(User $user)
     {
         $this->authorize('update', $user);
+
         return view('users.edit', ['user' => $user, 'communautes' => Communaute::orderBy('nom')->get()]);
     }
 
@@ -76,6 +81,7 @@ class UserController extends Controller
 
         $user->update($data);
         $user->syncRoles([$data['role']]);
+
         return redirect()->route('users.index')->with('success', 'Utilisateur modifié avec succès.');
     }
 
@@ -92,6 +98,7 @@ class UserController extends Controller
             Storage::disk('local')->delete($user->photo_path);
         }
         $user->delete(); // installations, productions, offres, compteurs et relevés suivent en cascade
+
         return redirect()->route('users.index')->with('success', 'Utilisateur supprimé.');
     }
 }

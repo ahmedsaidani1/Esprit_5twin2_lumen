@@ -1,0 +1,367 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Instanceof between App\\Models\\User and Illuminate\\Contracts\\Auth\\MustVerifyEmail will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Actions/Fortify/UpdateUserProfileInformation.php
+
+		-
+			message: '#^Parameter \#1 \$array \(list\<float\>\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: app/Ai/DetecteurAnomalies.php
+
+		-
+			message: '#^Parameter \#1 \$array \(non\-empty\-list\<float\>\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: app/Ai/LissageHolt.php
+
+		-
+			message: '#^Parameter \#1 \$array \(list\<float\>\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 2
+			path: app/Ai/RegressionLineaire.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Laravel\\Sanctum\\PersonalAccessToken\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/Api/AuthController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:echanges\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/CommunauteController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:visiblePour\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/CompteurController.php
+
+		-
+			message: '#^Parameter \#1 \$compteur of method App\\Services\\CompteurService\:\:delete\(\) expects App\\Models\\Compteur, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/CompteurController.php
+
+		-
+			message: '#^Parameter \#1 \$compteur of method App\\Services\\CompteurService\:\:rules\(\) expects App\\Models\\Compteur\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/CompteurController.php
+
+		-
+			message: '#^Parameter \#1 \$compteur of method App\\Services\\CompteurService\:\:update\(\) expects App\\Models\\Compteur, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/CompteurController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:visiblePour\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/ConsommationController.php
+
+		-
+			message: '#^Parameter \#1 \$consommation of method App\\Services\\ConsommationService\:\:rules\(\) expects App\\Models\\Consommation\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/ConsommationController.php
+
+		-
+			message: '#^Parameter \#1 \$consommation of method App\\Services\\ConsommationService\:\:update\(\) expects App\\Models\\Consommation, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/ConsommationController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:filtre\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/CrudController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:visiblePour\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/EchangeController.php
+
+		-
+			message: '#^Parameter \#1 \$echange of method App\\Services\\EchangeService\:\:delete\(\) expects App\\Models\\Echange, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/EchangeController.php
+
+		-
+			message: '#^Parameter \#1 \$echange of method App\\Services\\EchangeService\:\:update\(\) expects App\\Models\\Echange, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/EchangeController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/FactureController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:visiblePour\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/FactureController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$nom\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/IaController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,array\<string, App\\Models\\Offre\|float\|list\<string\>\>\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Http/Controllers/Api/IaController.php
+
+		-
+			message: '#^Parameter \#1 \$offre of method App\\Services\\OffreService\:\:update\(\) expects App\\Models\\Offre, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/OffreController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ConsommationCsvController.php
+
+		-
+			message: '#^Parameter \#1 \$compteur of method App\\Services\\Ia\\AnalyseConsommationService\:\:anomalies\(\) expects App\\Models\\Compteur, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/DashboardController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$acheteur\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/FactureController.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between array and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/MetricsController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$nom\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/ProductionCsvController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:visiblePour\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/Facture.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:role\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Notifications/DemandeAchatRecue.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$quantite_kwh\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Notifications/FactureEmise.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$vendeur\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Notifications/FactureEmise.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Notifications/StatutEchangeModifie.php
+
+		-
+			message: '#^Offset ''accepte''\|''propose''\|''refuse''\|''termine'' on array\{accepte\: ''accepté'', refuse\: ''refusé'', termine\: ''terminé'', propose\: ''remis en proposition''\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Notifications/StatutEchangeModifie.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Policies/ConsommationPolicy.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$acheteur_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Policies/FacturePolicy.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$vendeur_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Policies/FacturePolicy.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Policies/OffrePolicy.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Policies/ProductionPolicy.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>statut" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/AccessService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>vendeur_id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/AccessService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$acheteur\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/EchangeService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$statut\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/EchangeService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/EchangeService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:notify\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Services/EchangeService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Ia/AnalyseConsommationService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$energie_consommee_kwh\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Ia/AnalyseConsommationService.php
+
+		-
+			message: '#^Parameter \#1 \$compteur of method App\\Services\\Ia\\AnalyseConsommationService\:\:anomalies\(\) expects App\\Models\\Compteur, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/Ia/AnalyseConsommationService.php
+
+		-
+			message: '#^Parameter \#1 \$compteur of method App\\Services\\Ia\\AnalyseConsommationService\:\:serie\(\) expects App\\Models\\Compteur, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/Ia/AnalyseConsommationService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$date\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Services/Ia/PrevisionProductionService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$energie_produite_kwh\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Ia/PrevisionProductionService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Ia/PrevisionProductionService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:consommations\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Ia/PrevisionProductionService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$communaute_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Ia/RecommandationOffresService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Ia/RecommandationOffresService.php
+
+		-
+			message: '#^Method App\\Services\\Ia\\RecommandationOffresService\:\:pour\(\) should return Illuminate\\Support\\Collection\<int, array\{offre\: App\\Models\\Offre, score\: float, raisons\: list\<string\>\}\> but returns Illuminate\\Support\\Collection\<int, array\{offre\: App\\Models\\Offre, score\: float, raisons\: list\{0\: string, 1\?\: string, 2\?\: string, 3\?\: string\}\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/Ia/RecommandationOffresService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$acheteur\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Ia/RisqueImpayeService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$communaute_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Ia/RisqueImpayeService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$date_echange\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Ia/RisqueImpayeService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Installation\:\:\$total_kwh\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/StatsService.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Console\\Command\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: database/seeders/DemoSeeder.php

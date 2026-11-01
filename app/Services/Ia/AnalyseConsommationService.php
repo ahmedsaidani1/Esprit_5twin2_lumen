@@ -69,7 +69,7 @@ class AnalyseConsommationService
         $anomalies = array_column($this->anomalies($compteur), 'date');
         $residus = [];
         foreach ($X as $i => $x) {
-            if (!in_array($serie[$i]['date'], $anomalies, true)) {
+            if (! in_array($serie[$i]['date'], $anomalies, true)) {
                 $residus[] = $y[$i] - $modele->predire($x);
             }
         }
@@ -172,6 +172,7 @@ class AnalyseConsommationService
         for ($j = 1; $j <= 6; $j++) {
             $x[] = $jour->dayOfWeekIso === $j ? 1.0 : 0.0;
         }
+
         return $x;
     }
 
@@ -216,7 +217,7 @@ class AnalyseConsommationService
         asort($moyennesGroupe);
         $noms = [];
         foreach (array_keys($moyennesGroupe) as $rang => $g) {
-            $noms[$g] = self::PROFILS[$rang] ?? 'Groupe ' . ($rang + 1);
+            $noms[$g] = self::PROFILS[$rang] ?? 'Groupe '.($rang + 1);
         }
 
         $groupes = [];

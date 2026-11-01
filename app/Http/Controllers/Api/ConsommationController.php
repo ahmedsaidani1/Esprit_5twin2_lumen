@@ -14,9 +14,7 @@ class ConsommationController extends CrudController
 
     protected array $with = ['compteur:id,reference'];
 
-    public function __construct(private ConsommationService $service)
-    {
-    }
+    public function __construct(private ConsommationService $service) {}
 
     protected function rules(?Model $record = null): array
     {

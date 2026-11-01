@@ -69,6 +69,7 @@ class GestionUtilisateurTest extends TestCase
         $token = null;
         Notification::assertSentTo($user, ResetPassword::class, function (ResetPassword $n) use (&$token) {
             $token = $n->token;
+
             return true;
         });
 
@@ -91,6 +92,7 @@ class GestionUtilisateurTest extends TestCase
         $token = null;
         Notification::assertSentTo($user, ResetPassword::class, function ($n) use (&$token) {
             $token = $n->token;
+
             return true;
         });
 
@@ -223,6 +225,7 @@ class GestionUtilisateurTest extends TestCase
     private function codeSuivant(string $secret): string
     {
         $g = app(Google2FA::class);
+
         return $g->oathTotp($secret, $g->getTimestamp() + 1);
     }
 

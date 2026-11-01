@@ -29,7 +29,7 @@ class PrevisionProductionService
             return null;
         }
 
-        $modele = (new LissageHolt())->entrainer(array_column($serie, 'kwh'));
+        $modele = (new LissageHolt)->entrainer(array_column($serie, 'kwh'));
         $dernier = CarbonImmutable::parse(end($serie)['date']);
 
         $prevision = [];
@@ -49,7 +49,7 @@ class PrevisionProductionService
     public function suggererOffre(Installation $installation): ?array
     {
         $prevision = $this->prevoir($installation);
-        if (!$prevision) {
+        if (! $prevision) {
             return null;
         }
 
@@ -101,6 +101,7 @@ class PrevisionProductionService
                 $serie[$i]['kwh'] = round($serie[$avant]['kwh'] + $t * ($serie[$apres]['kwh'] - $serie[$avant]['kwh']), 2);
             }
         }
+
         return $serie;
     }
 
@@ -112,11 +113,13 @@ class PrevisionProductionService
 
         if ($releves && $releves->count() >= 7) {
             $parJour = Stats::moyenne($releves->map(fn ($v) => (float) $v)->all());
+
             return [$parJour * config('ia.prevision.horizon_jours'), "mesurée par le compteur {$compteur->reference}"];
         }
 
         $ratio = config('ia.prevision.autoconsommation_defaut');
-        return [$production * $ratio, 'estimation par défaut ' . ($ratio * 100) . ' %'];
+
+        return [$production * $ratio, 'estimation par défaut '.($ratio * 100).' %'];
     }
 
     /** Prix de référence (médiane des échanges conclus) ajusté par le rapport offre / demande. */

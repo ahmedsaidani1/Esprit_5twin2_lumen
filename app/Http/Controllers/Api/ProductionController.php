@@ -13,15 +13,13 @@ class ProductionController extends CrudController
 
     protected array $with = ['installation:id,nom'];
 
-    public function __construct(private AccessService $access)
-    {
-    }
+    public function __construct(private AccessService $access) {}
 
     protected function rules(?Model $record = null): array
     {
         return [
-            'installation_id'      => 'required|exists:installations,id',
-            'date'                 => 'required|date',
+            'installation_id' => 'required|exists:installations,id',
+            'date' => 'required|date',
             'energie_produite_kwh' => 'required|numeric|min:0',
         ];
     }
@@ -29,12 +27,14 @@ class ProductionController extends CrudController
     protected function persist(array $data, User $actor): Model
     {
         $this->access->assertInstallation($actor, $data['installation_id']);
+
         return parent::persist($data, $actor);
     }
 
     protected function modify(Model $record, array $data, User $actor): Model
     {
         $this->access->assertInstallation($actor, $data['installation_id']);
+
         return parent::modify($record, $data, $actor);
     }
 }

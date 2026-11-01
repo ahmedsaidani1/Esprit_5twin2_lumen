@@ -16,9 +16,7 @@ class CompteurController extends CrudController
 
     protected array $with = ['installation:id,nom'];
 
-    public function __construct(private CompteurService $service)
-    {
-    }
+    public function __construct(private CompteurService $service) {}
 
     protected function rules(?Model $record = null): array
     {
@@ -48,6 +46,7 @@ class CompteurController extends CrudController
     protected function remove(Model $record): ?JsonResponse
     {
         $this->service->delete($record);
+
         return null;
     }
 }

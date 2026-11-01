@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Communaute;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<\App\Models\Communaute>
+ * @extends Factory<Communaute>
  */
 class CommunauteFactory extends Factory
 {
@@ -14,7 +15,7 @@ class CommunauteFactory extends Factory
         $ville = fake()->randomElement(['Tunis', 'Sfax', 'Sousse', 'Bizerte', 'Gabès', 'Nabeul', 'Monastir']);
 
         return [
-            'nom' => 'Communauté ' . fake()->unique()->word() . ' ' . $ville,
+            'nom' => 'Communauté '.fake()->unique()->word().' '.$ville,
             'ville' => $ville,
         ];
     }

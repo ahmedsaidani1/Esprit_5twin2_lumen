@@ -16,18 +16,17 @@ class FactureController extends Controller
     public function __construct(
         private AccessService $access,
         private RisqueImpayeService $risque,
-    ) {
-    }
+    ) {}
 
     private function rules(?Facture $facture = null): array
     {
         return [
-            'echange_id'    => ['required', 'exists:echanges,id',
-                                Rule::unique('factures', 'echange_id')->ignore($facture?->id)],
+            'echange_id' => ['required', 'exists:echanges,id',
+                Rule::unique('factures', 'echange_id')->ignore($facture?->id)],
             'montant_total' => 'nullable|numeric|min:0',
             'date_emission' => 'required|date',
             'date_echeance' => 'required|date|after_or_equal:date_emission',
-            'statut'        => 'required|in:' . implode(',', Facture::STATUTS),
+            'statut' => 'required|in:'.implode(',', Facture::STATUTS),
         ];
     }
 
@@ -35,7 +34,7 @@ class FactureController extends Controller
     private function echangesFacturables(Request $request)
     {
         return Echange::with('vendeur', 'acheteur')
-            ->when(!$request->user()->isAdmin(), fn ($q) => $q->where('vendeur_id', $request->user()->id))
+            ->when(! $request->user()->isAdmin(), fn ($q) => $q->where('vendeur_id', $request->user()->id))
             ->get();
     }
 
@@ -57,6 +56,7 @@ class FactureController extends Controller
     public function create(Request $request)
     {
         $this->authorize('create', Facture::class);
+
         return view('factures.create', ['echanges' => $this->echangesFacturables($request)]);
     }
 
@@ -68,6 +68,7 @@ class FactureController extends Controller
 
         $facture = Facture::create(Facture::completerMontant($data));
         app(EchangeService::class)->notifierFacture($facture);
+
         return redirect()->route('factures.index')->with('success', "Facture créée et envoyée à l'acheteur.");
     }
 
@@ -86,6 +87,7 @@ class FactureController extends Controller
     public function edit(Request $request, Facture $facture)
     {
         $this->authorize('update', $facture);
+
         return view('factures.edit', [
             'facture' => $facture,
             'echanges' => $this->echangesFacturables($request),
@@ -99,6 +101,7 @@ class FactureController extends Controller
         $this->access->assertFactureIssuer($request->user(), $data['echange_id']);
 
         $facture->update(Facture::completerMontant($data));
+
         return redirect()->route('factures.index')->with('success', 'Facture modifiée avec succès.');
     }
 
@@ -106,6 +109,7 @@ class FactureController extends Controller
     {
         $this->authorize('delete', $facture);
         $facture->delete();
+
         return redirect()->route('factures.index')->with('success', 'Facture supprimée.');
     }
 
@@ -116,7 +120,7 @@ class FactureController extends Controller
 
         return response($pdf->contenu($facture), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="' . $pdf->nomFichier($facture) . '"',
+            'Content-Disposition' => 'inline; filename="'.$pdf->nomFichier($facture).'"',
         ]);
     }
 
@@ -126,6 +130,6 @@ class FactureController extends Controller
         $this->authorize('update', $facture);
         app(EchangeService::class)->notifierFacture($facture);
 
-        return back()->with('success', 'Facture envoyée par e-mail à ' . $facture->echange->acheteur->email . '.');
+        return back()->with('success', 'Facture envoyée par e-mail à '.$facture->echange->acheteur->email.'.');
     }
 }

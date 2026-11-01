@@ -120,7 +120,7 @@ class CompleteFeaturesTest extends TestCase
             $this->assertStringContainsString('<form method="GET"', $html, $page);
             $this->assertStringContainsString('data-autofilter', $html, $page);
             $this->assertStringContainsString('id="liste"', $html, $page);
-            $this->assertStringContainsString("form[data-autofilter]", $html, $page);   // le script est inclus
+            $this->assertStringContainsString('form[data-autofilter]', $html, $page);   // le script est inclus
             // le fallback sans JS (bouton Filtrer) reste présent
             $this->assertStringContainsString('Filtrer', $html, $page);
         }
@@ -160,7 +160,7 @@ class CompleteFeaturesTest extends TestCase
         $this->get('/installations?q=Toi')->assertOk()->assertSee('Toit');
         $this->get('/offres?statut=expiree')->assertOk()->assertSee('Aucune offre.');
         $this->get('/offres?statut=reservee')->assertOk()->assertDontSee('Aucune offre.');
-        $this->get('/productions?du=' . today()->addDay()->toDateString())->assertOk()->assertSee('Aucune production.');
+        $this->get('/productions?du='.today()->addDay()->toDateString())->assertOk()->assertSee('Aucune production.');
         $this->get('/factures?statut=payee')->assertOk()->assertSee('Aucune facture.');
         $this->get('/factures?statut=impayee')->assertOk()->assertDontSee('Aucune facture.');
     }
@@ -295,7 +295,7 @@ class CompleteFeaturesTest extends TestCase
         $this->postJson('/api/echanges', $this->echangePayload($d))->assertStatus(422)->assertJsonValidationErrors('offre_id');
 
         // suppression de l'échange libère l'offre
-        $this->deleteJson('/api/echanges/' . Echange::first()->id)->assertNoContent();
+        $this->deleteJson('/api/echanges/'.Echange::first()->id)->assertNoContent();
         $this->assertSame('disponible', $d['offre']->fresh()->statut);
     }
 

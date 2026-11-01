@@ -23,6 +23,7 @@ final class Stats
         foreach ($x as $v) {
             $somme += ($v - $m) ** 2;
         }
+
         return sqrt($somme / ($n - 1));
     }
 
@@ -42,6 +43,7 @@ final class Stats
         $pos = ($q * (count($x) - 1));
         $bas = (int) floor($pos);
         $haut = (int) ceil($pos);
+
         return $x[$bas] + ($x[$haut] - $x[$bas]) * ($pos - $bas);
     }
 
@@ -49,6 +51,7 @@ final class Stats
     public static function mad(array $x): float
     {
         $med = self::mediane($x);
+
         return self::mediane(array_map(fn ($v) => abs($v - $med), $x));
     }
 
@@ -63,6 +66,7 @@ final class Stats
         for ($i = 0; $i < $n; $i++) {
             $somme += abs($reel[$i] - $prevu[$i]);
         }
+
         return $somme / $n;
     }
 
@@ -75,13 +79,14 @@ final class Stats
                 $erreurs[] = abs(($r - $prevu[$i]) / $r);
             }
         }
+
         return $erreurs === [] ? 0.0 : 100 * self::moyenne($erreurs);
     }
 
     /**
      * Standardisation colonne par colonne : (x - moyenne) / écart-type.
      *
-     * @param list<list<float>> $X
+     * @param  list<list<float>>  $X
      * @return array{0: list<list<float>>, 1: list<float>, 2: list<float>} [X standardisé, moyennes, écarts-types]
      */
     public static function standardiser(array $X): array
@@ -93,6 +98,7 @@ final class Stats
             $moyennes[$j] = self::moyenne($col);
             $ecarts[$j] = self::ecartType($col) ?: 1.0; // colonne constante : pas de division par zéro
         }
+
         return [self::appliquerStandardisation($X, $moyennes, $ecarts), $moyennes, $ecarts];
     }
 

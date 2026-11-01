@@ -12,13 +12,11 @@ namespace App\Ai;
  */
 final class DetecteurAnomalies
 {
-    public function __construct(private float $seuil = 3.5)
-    {
-    }
+    public function __construct(private float $seuil = 3.5) {}
 
     /**
-     * @param list<float> $valeurs
-     * @param list<int>|null $groupes groupe de chaque valeur (ex. jour de la semaine) pour corriger la saisonnalité
+     * @param  list<float>  $valeurs
+     * @param  list<int>|null  $groupes  groupe de chaque valeur (ex. jour de la semaine) pour corriger la saisonnalité
      * @return list<array{index: int, valeur: float, score: float, sens: string}>
      */
     public function detecter(array $valeurs, ?array $groupes = null): array
@@ -42,6 +40,7 @@ final class DetecteurAnomalies
                 $anomalies[] = ['index' => $i, 'valeur' => $valeurs[$i], 'score' => $z, 'sens' => $z > 0 ? 'pic' : 'chute'];
             }
         }
+
         return $anomalies;
     }
 

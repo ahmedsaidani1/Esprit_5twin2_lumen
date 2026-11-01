@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use Database\Factories\CompteurFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Compteur extends Model
 {
-    /** @use HasFactory<\Database\Factories\CompteurFactory> */
+    /** @use HasFactory<CompteurFactory> */
     use HasFactory;
 
     public const STATUTS = ['actif', 'inactif', 'en_panne'];
@@ -17,17 +20,17 @@ class Compteur extends Model
 
     protected $casts = ['date_installation' => 'date'];
 
-    public function proprietaire()
+    public function proprietaire(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function installation()
+    public function installation(): BelongsTo
     {
         return $this->belongsTo(Installation::class);
     }
 
-    public function consommations()
+    public function consommations(): HasMany
     {
         return $this->hasMany(Consommation::class);
     }

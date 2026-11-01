@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use Database\Factories\OffreFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Offre extends Model
 {
-    /** @use HasFactory<\Database\Factories\OffreFactory> */
+    /** @use HasFactory<OffreFactory> */
     use HasFactory;
 
     public const STATUTS = ['disponible', 'reservee', 'expiree'];
@@ -22,12 +25,12 @@ class Offre extends Model
         'date_fin' => 'date',
     ];
 
-    public function installation()
+    public function installation(): BelongsTo
     {
         return $this->belongsTo(Installation::class);
     }
 
-    public function echanges()
+    public function echanges(): HasMany
     {
         return $this->hasMany(Echange::class);
     }

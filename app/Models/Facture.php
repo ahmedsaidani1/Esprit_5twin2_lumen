@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use Database\Factories\FactureFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Facture extends Model
 {
-    /** @use HasFactory<\Database\Factories\FactureFactory> */
+    /** @use HasFactory<FactureFactory> */
     use HasFactory;
 
     public const STATUTS = ['payee', 'impayee', 'annulee'];
@@ -22,7 +24,7 @@ class Facture extends Model
         'date_echeance' => 'date',
     ];
 
-    public function echange()
+    public function echange(): BelongsTo
     {
         return $this->belongsTo(Echange::class);
     }
@@ -30,9 +32,10 @@ class Facture extends Model
     /** Si le montant est vide, on le calcule : quantité × prix unitaire de l'échange. */
     public static function completerMontant(array $data): array
     {
-        if (!isset($data['montant_total'])) {
+        if (! isset($data['montant_total'])) {
             $data['montant_total'] = Echange::findOrFail($data['echange_id'])->montant;
         }
+
         return $data;
     }
 

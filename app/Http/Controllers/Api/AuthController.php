@@ -16,16 +16,16 @@ class AuthController extends Controller
     public function login(Request $request, TwoFactorAuthenticationProvider $twoFactor): JsonResponse
     {
         $data = $request->validate([
-            'email'         => 'required|email',
-            'password'      => 'required|string',
-            'code'          => 'nullable|string',
+            'email' => 'required|email',
+            'password' => 'required|string',
+            'code' => 'nullable|string',
             'recovery_code' => 'nullable|string',
-            'device_name'   => 'nullable|string|max:100',
+            'device_name' => 'nullable|string|max:100',
         ]);
 
         $user = User::where('email', $data['email'])->first();
 
-        if (!$user || !Hash::check($data['password'], $user->password)) {
+        if (! $user || ! Hash::check($data['password'], $user->password)) {
             throw ValidationException::withMessages(['email' => __('auth.failed')]);
         }
 
@@ -36,7 +36,7 @@ class AuthController extends Controller
 
         return response()->json([
             'token' => $user->createToken($data['device_name'] ?? 'api')->plainTextToken,
-            'user'  => $this->present($user),
+            'user' => $this->present($user),
         ]);
     }
 
@@ -55,17 +55,18 @@ class AuthController extends Controller
 
     private function verifierDeuxiemeFacteur(User $user, array $data, TwoFactorAuthenticationProvider $twoFactor): void
     {
-        if (!empty($data['code'])) {
+        if (! empty($data['code'])) {
             if ($twoFactor->verify(decrypt($user->two_factor_secret), $data['code'])) {
                 return;
             }
             throw ValidationException::withMessages(['code' => __('The provided two factor authentication code was invalid.')]);
         }
 
-        if (!empty($data['recovery_code'])) {
+        if (! empty($data['recovery_code'])) {
             $code = collect($user->recoveryCodes())->first(fn ($c) => hash_equals($c, $data['recovery_code']));
             if ($code) {
                 $user->replaceRecoveryCode($code); // un code de récupération ne sert qu'une fois
+
                 return;
             }
             throw ValidationException::withMessages(['recovery_code' => __('The provided two factor recovery code was invalid.')]);

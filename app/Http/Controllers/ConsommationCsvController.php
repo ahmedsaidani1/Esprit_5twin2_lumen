@@ -17,9 +17,7 @@ use Illuminate\Validation\ValidationException;
  */
 class ConsommationCsvController extends Controller
 {
-    public function __construct(private CsvService $csv, private ConsommationService $service)
-    {
-    }
+    public function __construct(private CsvService $csv, private ConsommationService $service) {}
 
     public function import(Request $request, Compteur $compteur)
     {
@@ -38,19 +36,20 @@ class ConsommationCsvController extends Controller
 
             $v = Validator::make($donnees, $this->service->rules());
             if ($v->fails()) {
-                $erreurs[] = "Ligne {$ligne['_ligne']} : " . implode(' ', $v->errors()->all());
+                $erreurs[] = "Ligne {$ligne['_ligne']} : ".implode(' ', $v->errors()->all());
+
                 continue;
             }
             try {
                 $this->service->create($v->validated(), $request->user());
                 $importes++;
             } catch (ValidationException $e) {
-                $erreurs[] = "Ligne {$ligne['_ligne']} : " . implode(' ', $e->validator->errors()->all());
+                $erreurs[] = "Ligne {$ligne['_ligne']} : ".implode(' ', $e->validator->errors()->all());
             }
         }
 
         return redirect()->route('compteurs.show', $compteur)
-            ->with('success', "Import terminé : {$importes} relevé(s) ajouté(s)" . ($erreurs ? ', ' . count($erreurs) . ' ligne(s) refusée(s).' : '.'))
+            ->with('success', "Import terminé : {$importes} relevé(s) ajouté(s)".($erreurs ? ', '.count($erreurs).' ligne(s) refusée(s).' : '.'))
             ->with('erreurs_import', array_slice($erreurs, 0, 20));
     }
 
@@ -61,7 +60,7 @@ class ConsommationCsvController extends Controller
         $releves = Consommation::visiblePour($request->user())->with('compteur')
             ->filtre($request->query())->orderBy('date')->cursor();
 
-        return $this->csv->exporter('consommations-' . now()->format('Y-m-d') . '.csv',
+        return $this->csv->exporter('consommations-'.now()->format('Y-m-d').'.csv',
             ['compteur', 'date', 'energie_consommee_kwh'],
             (function () use ($releves) {
                 foreach ($releves as $r) {

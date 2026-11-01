@@ -2,11 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Compteur;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<\App\Models\Compteur>
+ * @extends Factory<Compteur>
  */
 class CompteurFactory extends Factory
 {
@@ -15,7 +16,7 @@ class CompteurFactory extends Factory
         return [
             'user_id' => User::factory(),
             'installation_id' => null,
-            'reference' => 'CPT-' . fake()->unique()->numerify('#####'),
+            'reference' => 'CPT-'.fake()->unique()->numerify('#####'),
             'date_installation' => fake()->dateTimeBetween('-2 years', '-100 days')->format('Y-m-d'),
             'statut' => 'actif',
         ];

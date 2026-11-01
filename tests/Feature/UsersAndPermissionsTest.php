@@ -17,11 +17,17 @@ class UsersAndPermissionsTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
     private User $alice;   // propriétaire / vendeur
+
     private User $bob;     // acheteur
+
     private User $carol;   // étrangère aux échanges
+
     private Communaute $communaute;
+
     private Installation $installation;
+
     private Offre $offre;
 
     protected function setUp(): void
@@ -341,7 +347,7 @@ class UsersAndPermissionsTest extends TestCase
         $facture = Facture::firstOrFail();
 
         $this->actingAs($this->bob);
-        $this->get('/factures')->assertOk()->assertSee('#' . $facture->echange_id);
+        $this->get('/factures')->assertOk()->assertSee('#'.$facture->echange_id);
         $this->get("/factures/{$facture->id}")->assertOk();
         $this->get("/factures/{$facture->id}/edit")->assertForbidden();
         $this->delete("/factures/{$facture->id}")->assertForbidden();
@@ -411,7 +417,8 @@ class UsersAndPermissionsTest extends TestCase
         // pour que chaque requête soit authentifiée par son propre jeton, comme en production.
         $token = function (User $u) {
             $this->app['auth']->forgetGuards();
-            return ['Authorization' => 'Bearer ' . $u->createToken('t')->plainTextToken];
+
+            return ['Authorization' => 'Bearer '.$u->createToken('t')->plainTextToken];
         };
 
         // un membre ne modifie pas l'installation d'un autre
@@ -441,7 +448,7 @@ class UsersAndPermissionsTest extends TestCase
 
     public function test_api_installation_owner_is_forced_to_the_caller(): void
     {
-        $token = ['Authorization' => 'Bearer ' . $this->bob->createToken('t')->plainTextToken];
+        $token = ['Authorization' => 'Bearer '.$this->bob->createToken('t')->plainTextToken];
 
         $this->postJson('/api/installations', ['user_id' => $this->alice->id, 'nom' => 'Bob API', 'type' => 'solaire', 'puissance_kw' => 2], $token)
             ->assertCreated()->assertJsonPath('user_id', $this->bob->id);

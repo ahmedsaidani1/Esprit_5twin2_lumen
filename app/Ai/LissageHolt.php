@@ -16,12 +16,18 @@ use InvalidArgumentException;
 final class LissageHolt
 {
     private float $alpha = 0.5;
+
     private float $beta = 0.1;
+
     private float $niveau = 0.0;
+
     private float $tendance = 0.0;
+
     private float $ecartResidus = 0.0;
+
     /** @var list<float> prévisions à un pas sur l'historique (pour mesurer l'erreur) */
     private array $ajustees = [];
+
     /** @var list<float> */
     private array $serie = [];
 
@@ -69,6 +75,7 @@ final class LissageHolt
                 'haut' => $v + $marge,
             ];
         }
+
         return $res;
     }
 
@@ -101,6 +108,7 @@ final class LissageHolt
             $niveau = $a * $y[$t] + (1 - $a) * ($niveau + $tendance);
             $tendance = $b * ($niveau - $ancienNiveau) + (1 - $b) * $tendance;
         }
+
         return [$sse, $niveau, $tendance, $prevues];
     }
 }

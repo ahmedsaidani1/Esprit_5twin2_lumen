@@ -21,14 +21,14 @@ Artisan::command('ia:entrainer', function (RisqueImpayeService $risque, AnalyseC
     $consommation->oublierProfils();
     $groupes = $consommation->profils()['groupes'];
 
-    if (!$resultat['entraine']) {
+    if (! $resultat['entraine']) {
         $this->warn($resultat['raison']);
     } else {
         $this->info(sprintf('Risque d\'impayé : %d factures (%d impayées), entraînement %d / test %d.',
             $resultat['exemples']['total'], $resultat['exemples']['impayes'], $resultat['exemples']['entrainement'], $resultat['exemples']['test']));
         $this->table(['Exactitude', 'Précision', 'Rappel', 'AUC'], [array_map(fn ($v) => number_format($v, 3), $resultat['metriques'])]);
     }
-    $this->info(count($groupes) . ' profil(s) de consommation calculé(s).');
+    $this->info(count($groupes).' profil(s) de consommation calculé(s).');
 })->purpose('Entraîne les modèles d\'IA (risque d\'impayé, profils de consommation)');
 
 Schedule::command('offres:expirer')->daily();

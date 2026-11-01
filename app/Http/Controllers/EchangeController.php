@@ -11,9 +11,7 @@ use Illuminate\Http\Request;
 
 class EchangeController extends Controller
 {
-    public function __construct(private EchangeService $service)
-    {
-    }
+    public function __construct(private EchangeService $service) {}
 
     private function formData(?Echange $echange = null): array
     {
@@ -45,6 +43,7 @@ class EchangeController extends Controller
     public function create()
     {
         $this->authorize('create', Echange::class);
+
         return view('echanges.create', $this->formData());
     }
 
@@ -52,6 +51,7 @@ class EchangeController extends Controller
     {
         $this->authorize('create', Echange::class);
         $this->service->create($request->validate($this->service->rules()), $request->user());
+
         return redirect()->route('echanges.index')->with('success', 'Échange créé avec succès.');
     }
 
@@ -59,12 +59,14 @@ class EchangeController extends Controller
     {
         $this->authorize('view', $echange);
         $echange->load(['vendeur', 'acheteur', 'communaute', 'offre.installation', 'facture']);
+
         return view('echanges.show', compact('echange'));
     }
 
     public function edit(Echange $echange)
     {
         $this->authorize('update', $echange);
+
         return view('echanges.edit', ['echange' => $echange] + $this->formData($echange));
     }
 
@@ -72,6 +74,7 @@ class EchangeController extends Controller
     {
         $this->authorize('update', $echange);
         $this->service->update($echange, $request->validate($this->service->rules()), $request->user());
+
         return redirect()->route('echanges.index')->with('success', 'Échange modifié avec succès.');
     }
 
@@ -79,6 +82,7 @@ class EchangeController extends Controller
     {
         $this->authorize('delete', $echange);
         $this->service->delete($echange);
+
         return redirect()->route('echanges.index')->with('success', 'Échange supprimé.');
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -16,13 +17,13 @@ return new class extends Migration
 {
     /** Permissions par rôle. L'admin a tout. */
     private const PERMISSIONS = [
-        'gerer-utilisateurs'      => ['admin'],
-        'gerer-communautes'       => ['admin'],
+        'gerer-utilisateurs' => ['admin'],
+        'gerer-communautes' => ['admin'],
         'voir-toutes-les-donnees' => ['admin'],
-        'publier-offres'          => ['admin', 'membre'],
-        'acheter-energie'         => ['admin', 'membre'],
-        'gerer-compteurs'         => ['admin', 'membre'],
-        'utiliser-ia'             => ['admin', 'membre'],
+        'publier-offres' => ['admin', 'membre'],
+        'acheter-energie' => ['admin', 'membre'],
+        'gerer-compteurs' => ['admin', 'membre'],
+        'utiliser-ia' => ['admin', 'membre'],
     ];
 
     public function up(): void
@@ -42,9 +43,9 @@ return new class extends Migration
         if (Schema::hasColumn('users', 'role')) {
             foreach (DB::table('users')->select('id', 'role')->get() as $user) {
                 DB::table('model_has_roles')->insertOrIgnore([
-                    'role_id'    => $roles[$user->role ?: 'membre']->id,
-                    'model_type' => \App\Models\User::class,
-                    'model_id'   => $user->id,
+                    'role_id' => $roles[$user->role ?: 'membre']->id,
+                    'model_type' => User::class,
+                    'model_id' => $user->id,
                 ]);
             }
 

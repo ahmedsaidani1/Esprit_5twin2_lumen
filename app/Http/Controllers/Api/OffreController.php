@@ -13,9 +13,7 @@ class OffreController extends CrudController
 
     protected array $with = ['installation:id,nom,user_id'];
 
-    public function __construct(private OffreService $service)
-    {
-    }
+    public function __construct(private OffreService $service) {}
 
     protected function rules(?Model $record = null): array
     {

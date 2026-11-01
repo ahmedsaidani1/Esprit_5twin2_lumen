@@ -22,7 +22,7 @@ class MetricsController extends Controller
     public function __invoke(Request $request)
     {
         $jeton = config('services.metrics.token');
-        abort_if($jeton ? !hash_equals($jeton, (string) $request->bearerToken()) : !app()->isLocal(), 403);
+        abort_if($jeton ? ! hash_equals($jeton, (string) $request->bearerToken()) : ! app()->isLocal(), 403);
 
         $debut = microtime(true);
         $baseOk = rescue(fn () => DB::select('select 1') !== null, false, false);
@@ -33,8 +33,8 @@ class MetricsController extends Controller
             $lignes[] = "# HELP solarshare_{$nom} {$aide}";
             $lignes[] = "# TYPE solarshare_{$nom} {$type}";
             foreach ($valeurs as [$labels, $valeur]) {
-                $l = $labels ? '{' . implode(',', array_map(fn ($k, $v) => "{$k}=\"{$v}\"", array_keys($labels), $labels)) . '}' : '';
-                $lignes[] = "solarshare_{$nom}{$l} " . (is_float($valeur) ? round($valeur, 4) : $valeur);
+                $l = $labels ? '{'.implode(',', array_map(fn ($k, $v) => "{$k}=\"{$v}\"", array_keys($labels), $labels)).'}' : '';
+                $lignes[] = "solarshare_{$nom}{$l} ".(is_float($valeur) ? round($valeur, 4) : $valeur);
             }
         };
 
@@ -64,6 +64,6 @@ class MetricsController extends Controller
         $metrique('ia_modele_risque_auc', 'AUC du modèle de risque d\'impayé (0 si non entraîné)', 'gauge',
             [[[], (float) ($modele['metriques']['auc'] ?? 0)]]);
 
-        return response(implode("\n", $lignes) . "\n", 200, ['Content-Type' => 'text/plain; version=0.0.4']);
+        return response(implode("\n", $lignes)."\n", 200, ['Content-Type' => 'text/plain; version=0.0.4']);
     }
 }

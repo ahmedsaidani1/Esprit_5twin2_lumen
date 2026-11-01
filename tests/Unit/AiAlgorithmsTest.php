@@ -34,7 +34,7 @@ class AiAlgorithmsTest extends TestCase
             $X[] = [$x1, $x2];
             $y[] = 3 + 2 * $x1 - 0.5 * $x2;
         }
-        $m = (new RegressionLineaire())->entrainer($X, $y);
+        $m = (new RegressionLineaire)->entrainer($X, $y);
 
         [$b0, $b1, $b2] = $m->coefficients();
         $this->assertEqualsWithDelta(3.0, $b0, 1e-3);
@@ -90,7 +90,7 @@ class AiAlgorithmsTest extends TestCase
     public function test_holt_forecasts_a_linear_trend(): void
     {
         $serie = array_map(fn ($t) => 20 + 1.5 * $t, range(0, 29)); // +1,5 par jour
-        $m = (new LissageHolt())->entrainer($serie);
+        $m = (new LissageHolt)->entrainer($serie);
         $prev = $m->prevoir(3);
 
         $this->assertEqualsWithDelta(20 + 1.5 * 30, $prev[0]['valeur'], 0.5);
@@ -111,7 +111,7 @@ class AiAlgorithmsTest extends TestCase
         $valeurs[20] = 45;
         $valeurs[30] = 0.5;
 
-        $anomalies = (new DetecteurAnomalies())->detecter($valeurs, $jours);
+        $anomalies = (new DetecteurAnomalies)->detecter($valeurs, $jours);
         $indices = array_column($anomalies, 'index');
 
         $this->assertContains(20, $indices);

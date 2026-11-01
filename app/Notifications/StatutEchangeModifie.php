@@ -10,9 +10,7 @@ class StatutEchangeModifie extends Notification
 {
     public const LIBELLES = ['accepte' => 'accepté', 'refuse' => 'refusé', 'termine' => 'terminé', 'propose' => 'remis en proposition'];
 
-    public function __construct(public Echange $echange)
-    {
-    }
+    public function __construct(public Echange $echange) {}
 
     public function via(object $notifiable): array
     {

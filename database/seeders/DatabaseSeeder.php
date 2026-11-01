@@ -21,20 +21,20 @@ class DatabaseSeeder extends Seeder
             ['nom' => 'Communauté Verte Sousse', 'ville' => 'Sousse'],
         ])->map(fn ($c) => Communaute::create($c));
 
-       /* User::factory()->admin()->create([
-            'name' => 'Admin SolarShare',
-            'email' => 'admin@solarshare.test',
-        ]);
+        /* User::factory()->admin()->create([
+             'name' => 'Admin SolarShare',
+             'email' => 'admin@solarshare.test',
+         ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'communaute_id' => $communautes[0]->id,
-        ]);
+         User::factory()->create([
+             'name' => 'Test User',
+             'email' => 'test@example.com',
+             'communaute_id' => $communautes[0]->id,
+         ]);
 
-        User::factory(4)->create()->each(
-            fn ($u, $i) => $u->update(['communaute_id' => $communautes[($i + 1) % $communautes->count()]->id])
-        );*/
+         User::factory(4)->create()->each(
+             fn ($u, $i) => $u->update(['communaute_id' => $communautes[($i + 1) % $communautes->count()]->id])
+         );*/
 
         $this->call(InstallationSeeder::class);
     }

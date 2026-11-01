@@ -17,9 +17,7 @@ use Illuminate\Support\Facades\Validator;
  */
 class ProductionCsvController extends Controller
 {
-    public function __construct(private CsvService $csv)
-    {
-    }
+    public function __construct(private CsvService $csv) {}
 
     public function import(Request $request, Installation $installation)
     {
@@ -40,7 +38,8 @@ class ProductionCsvController extends Controller
                     'energie_produite_kwh' => 'required|numeric|min:0|max:100000',
                 ]);
                 if ($v->fails()) {
-                    $erreurs[] = "Ligne {$ligne['_ligne']} : " . implode(' ', $v->errors()->all());
+                    $erreurs[] = "Ligne {$ligne['_ligne']} : ".implode(' ', $v->errors()->all());
+
                     continue;
                 }
 
@@ -56,6 +55,7 @@ class ProductionCsvController extends Controller
         });
 
         $message = "Import terminé : {$crees} production(s) ajoutée(s), {$majs} mise(s) à jour.";
+
         return redirect()->route('installations.show', $installation)
             ->with('success', $message)
             ->with('erreurs_import', array_slice($erreurs, 0, 20));
@@ -67,7 +67,7 @@ class ProductionCsvController extends Controller
 
         $productions = Production::with('installation')->filtre($request->query())->orderBy('date')->cursor();
 
-        return $this->csv->exporter('productions-' . now()->format('Y-m-d') . '.csv',
+        return $this->csv->exporter('productions-'.now()->format('Y-m-d').'.csv',
             ['installation', 'date', 'energie_produite_kwh'],
             (function () use ($productions) {
                 foreach ($productions as $p) {
@@ -82,7 +82,7 @@ class ProductionCsvController extends Controller
 
         $offres = Offre::with('installation')->filtre($request->query())->orderBy('date_debut')->cursor();
 
-        return $this->csv->exporter('offres-' . now()->format('Y-m-d') . '.csv',
+        return $this->csv->exporter('offres-'.now()->format('Y-m-d').'.csv',
             ['installation', 'quantite_kwh', 'prix_kwh', 'date_debut', 'date_fin', 'statut'],
             (function () use ($offres) {
                 foreach ($offres as $o) {

@@ -20,20 +20,18 @@ class EchangeService
     public function rules(): array
     {
         return [
-            'vendeur_id'    => 'required|exists:users,id',
-            'acheteur_id'   => 'required|exists:users,id|different:vendeur_id',
+            'vendeur_id' => 'required|exists:users,id',
+            'acheteur_id' => 'required|exists:users,id|different:vendeur_id',
             'communaute_id' => 'required|exists:communautes,id',
-            'offre_id'      => 'nullable|exists:offres,id',
-            'quantite_kwh'  => 'required|numeric|min:0.01',
+            'offre_id' => 'nullable|exists:offres,id',
+            'quantite_kwh' => 'required|numeric|min:0.01',
             'prix_unitaire' => 'required|numeric|min:0',
-            'date_echange'  => 'required|date',
-            'statut'        => 'required|in:' . implode(',', Echange::STATUTS),
+            'date_echange' => 'required|date',
+            'statut' => 'required|in:'.implode(',', Echange::STATUTS),
         ];
     }
 
-    public function __construct(private AccessService $access)
-    {
-    }
+    public function __construct(private AccessService $access) {}
 
     public function create(array $data, User $actor): Echange
     {
@@ -44,6 +42,7 @@ class EchangeService
         [$echange, $facture] = DB::transaction(function () use ($data) {
             $echange = Echange::create($data);
             $this->syncOffre($echange);
+
             return [$echange, $this->syncFacture($echange)];
         });
 
@@ -67,6 +66,7 @@ class EchangeService
             $ancienne = $echange->offre_id;
             $echange->update($data);
             $this->syncOffre($echange, $ancienne);
+
             return $this->syncFacture($echange);
         });
 
@@ -105,7 +105,7 @@ class EchangeService
         $offre = Offre::with('installation')->findOrFail($data['offre_id']);
         $dejaLiee = $echange && $echange->offre_id === $offre->id;
 
-        if ($offre->statut !== 'disponible' && !$dejaLiee) {
+        if ($offre->statut !== 'disponible' && ! $dejaLiee) {
             throw ValidationException::withMessages(['offre_id' => "Cette offre n'est plus disponible."]);
         }
         if ((int) $data['vendeur_id'] !== (int) $offre->installation->user_id) {
@@ -136,13 +136,13 @@ class EchangeService
     {
         $facture = $echange->facture()->first();
 
-        if (in_array($echange->statut, ['accepte', 'termine'], true) && !$facture) {
+        if (in_array($echange->statut, ['accepte', 'termine'], true) && ! $facture) {
             return Facture::create([
-                'echange_id'    => $echange->id,
+                'echange_id' => $echange->id,
                 'montant_total' => $echange->montant,
                 'date_emission' => today(),
                 'date_echeance' => today()->addDays(30),
-                'statut'        => 'impayee',
+                'statut' => 'impayee',
             ]);
         }
 

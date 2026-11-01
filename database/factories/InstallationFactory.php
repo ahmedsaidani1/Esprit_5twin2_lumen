@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<\App\Models\Installation>
+ * @extends Factory<Installation>
  */
 class InstallationFactory extends Factory
 {
@@ -16,7 +16,7 @@ class InstallationFactory extends Factory
         return [
             'user_id' => User::factory(),
             'communaute_id' => null,
-            'nom' => 'Toit ' . fake()->unique()->lastName(),
+            'nom' => 'Toit '.fake()->unique()->lastName(),
             'type' => fake()->randomElement(Installation::TYPES),
             'puissance_kw' => fake()->randomFloat(2, 3, 50),
             'localisation' => fake()->city(),

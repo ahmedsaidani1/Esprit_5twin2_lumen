@@ -15,9 +15,7 @@ class EchangeController extends CrudController
 
     protected array $with = ['vendeur:id,name', 'acheteur:id,name', 'communaute', 'offre', 'facture'];
 
-    public function __construct(private EchangeService $service)
-    {
-    }
+    public function __construct(private EchangeService $service) {}
 
     protected function rules(?Model $record = null): array
     {
@@ -42,6 +40,7 @@ class EchangeController extends CrudController
     protected function remove(Model $record): ?JsonResponse
     {
         $this->service->delete($record);
+
         return null;
     }
 }

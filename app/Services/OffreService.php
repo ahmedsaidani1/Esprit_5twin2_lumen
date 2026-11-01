@@ -13,11 +13,11 @@ class OffreService
     {
         return [
             'installation_id' => 'required|exists:installations,id',
-            'quantite_kwh'    => 'required|numeric|min:0.01',
-            'prix_kwh'        => 'required|numeric|min:0',
-            'date_debut'      => 'required|date',
-            'date_fin'        => 'required|date|after_or_equal:date_debut',
-            'statut'          => 'required|in:' . implode(',', Offre::STATUTS),
+            'quantite_kwh' => 'required|numeric|min:0.01',
+            'prix_kwh' => 'required|numeric|min:0',
+            'date_debut' => 'required|date',
+            'date_fin' => 'required|date|after_or_equal:date_debut',
+            'statut' => 'required|in:'.implode(',', Offre::STATUTS),
         ];
     }
 
@@ -33,20 +33,19 @@ class OffreService
 
         if ((float) $data['quantite_kwh'] > $stock) {
             throw ValidationException::withMessages([
-                'quantite_kwh' => 'Stock insuffisant : seulement ' . number_format($stock, 2)
-                    . ' kWh produits et non engagés pour cette installation.',
+                'quantite_kwh' => 'Stock insuffisant : seulement '.number_format($stock, 2)
+                    .' kWh produits et non engagés pour cette installation.',
             ]);
         }
     }
 
-    public function __construct(private AccessService $access)
-    {
-    }
+    public function __construct(private AccessService $access) {}
 
     public function create(array $data, User $actor): Offre
     {
         $this->access->assertInstallation($actor, $data['installation_id']);
         $this->checkStock($data);
+
         return Offre::create($data);
     }
 
@@ -55,6 +54,7 @@ class OffreService
         $this->access->assertInstallation($actor, $data['installation_id']);
         $this->checkStock($data, $offre);
         $offre->update($data);
+
         return $offre;
     }
 }

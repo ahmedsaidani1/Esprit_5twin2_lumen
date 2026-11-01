@@ -10,9 +10,7 @@ use Illuminate\Notifications\Notification;
 /** Membre A — l'acheteur reçoit sa facture : notification dans l'application + e-mail avec le PDF joint. */
 class FactureEmise extends Notification
 {
-    public function __construct(public Facture $facture)
-    {
-    }
+    public function __construct(public Facture $facture) {}
 
     public function via(object $notifiable): array
     {
@@ -26,10 +24,10 @@ class FactureEmise extends Notification
 
         return (new MailMessage)
             ->subject(sprintf('Votre facture SolarShare n° %05d', $f->id))
-            ->greeting('Bonjour ' . $notifiable->name . ',')
+            ->greeting('Bonjour '.$notifiable->name.',')
             ->line(sprintf('%s vous a émis une facture de %s DT pour %s kWh d\'énergie renouvelable.',
                 $f->echange->vendeur->name, number_format($f->montant_total, 2, ',', ' '), $f->echange->quantite_kwh))
-            ->line('Échéance de paiement : ' . $f->date_echeance->format('d/m/Y') . '.')
+            ->line('Échéance de paiement : '.$f->date_echeance->format('d/m/Y').'.')
             ->action('Voir la facture', route('factures.show', $f))
             ->line('La facture est jointe à cet e-mail au format PDF.')
             ->attachData($pdf->contenu($f), $pdf->nomFichier($f), ['mime' => 'application/pdf']);

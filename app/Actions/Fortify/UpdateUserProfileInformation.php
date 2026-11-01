@@ -58,7 +58,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
     {
         $photo = $input['photo'] ?? null;
 
-        if ($photo instanceof UploadedFile || !empty($input['supprimer_photo'])) {
+        if ($photo instanceof UploadedFile || ! empty($input['supprimer_photo'])) {
             if ($user->photo_path) {
                 Storage::disk('local')->delete($user->photo_path);
             }

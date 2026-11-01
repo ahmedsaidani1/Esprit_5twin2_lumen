@@ -10,7 +10,7 @@ class CommunauteController extends Controller
     private function rules(): array
     {
         return [
-            'nom'   => 'required|string|max:255',
+            'nom' => 'required|string|max:255',
             'ville' => 'nullable|string|max:255',
         ];
     }
@@ -21,12 +21,14 @@ class CommunauteController extends Controller
 
         $communautes = Communaute::withCount(['installations', 'echanges'])
             ->filtre($request->query())->orderBy('nom')->paginate(10)->withQueryString();
+
         return view('communautes.index', compact('communautes'));
     }
 
     public function create()
     {
         $this->authorize('create', Communaute::class);
+
         return view('communautes.create');
     }
 
@@ -34,6 +36,7 @@ class CommunauteController extends Controller
     {
         $this->authorize('create', Communaute::class);
         Communaute::create($request->validate($this->rules()));
+
         return redirect()->route('communautes.index')->with('success', 'Communauté créée avec succès.');
     }
 
@@ -41,12 +44,14 @@ class CommunauteController extends Controller
     {
         $this->authorize('view', $communaute);
         $communaute->load('installations.proprietaire')->loadCount('echanges');
+
         return view('communautes.show', compact('communaute'));
     }
 
     public function edit(Communaute $communaute)
     {
         $this->authorize('update', $communaute);
+
         return view('communautes.edit', compact('communaute'));
     }
 
@@ -54,6 +59,7 @@ class CommunauteController extends Controller
     {
         $this->authorize('update', $communaute);
         $communaute->update($request->validate($this->rules()));
+
         return redirect()->route('communautes.index')->with('success', 'Communauté modifiée avec succès.');
     }
 
@@ -66,6 +72,7 @@ class CommunauteController extends Controller
         }
 
         $communaute->delete();
+
         return redirect()->route('communautes.index')->with('success', 'Communauté supprimée.');
     }
 }

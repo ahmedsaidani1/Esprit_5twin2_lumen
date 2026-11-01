@@ -38,6 +38,7 @@ class CsvService
             }
             $resultat[] = $assoc + ['_ligne' => $i + 2];
         }
+
         return $resultat;
     }
 

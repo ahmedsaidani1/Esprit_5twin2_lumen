@@ -11,17 +11,15 @@ use Illuminate\Http\Request;
 
 class InstallationController extends Controller
 {
-    public function __construct(private AccessService $access)
-    {
-    }
+    public function __construct(private AccessService $access) {}
 
     private function rules(): array
     {
         return [
-            'user_id'      => 'required|exists:users,id',
+            'user_id' => 'required|exists:users,id',
             'communaute_id' => 'nullable|exists:communautes,id',
-            'nom'          => 'required|string|max:255',
-            'type'         => 'required|in:' . implode(',', Installation::TYPES),
+            'nom' => 'required|string|max:255',
+            'type' => 'required|in:'.implode(',', Installation::TYPES),
             'puissance_kw' => 'required|numeric|min:0.01',
             'localisation' => 'nullable|string|max:255',
         ];
@@ -39,12 +37,14 @@ class InstallationController extends Controller
 
         $installations = Installation::with('proprietaire', 'communaute')
             ->filtre($request->query())->latest()->paginate(10)->withQueryString();
+
         return view('installations.index', compact('installations'));
     }
 
     public function create(Request $request)
     {
         $this->authorize('create', Installation::class);
+
         return view('installations.create', [
             'users' => $this->owners($request),
             'communautes' => Communaute::orderBy('nom')->get(),
@@ -57,6 +57,7 @@ class InstallationController extends Controller
         $request->merge($this->access->forceOwner($request->user(), $request->all()));
 
         Installation::create($request->validate($this->rules()));
+
         return redirect()->route('installations.index')->with('success', 'Installation créée avec succès.');
     }
 
@@ -78,6 +79,7 @@ class InstallationController extends Controller
     public function edit(Request $request, Installation $installation)
     {
         $this->authorize('update', $installation);
+
         return view('installations.edit', [
             'installation' => $installation,
             'users' => $this->owners($request),
@@ -91,6 +93,7 @@ class InstallationController extends Controller
         $request->merge($this->access->forceOwner($request->user(), $request->all()));
 
         $installation->update($request->validate($this->rules()));
+
         return redirect()->route('installations.index')->with('success', 'Installation modifiée avec succès.');
     }
 
@@ -98,6 +101,7 @@ class InstallationController extends Controller
     {
         $this->authorize('delete', $installation);
         $installation->delete();
+
         return redirect()->route('installations.index')->with('success', 'Installation supprimée.');
     }
 }

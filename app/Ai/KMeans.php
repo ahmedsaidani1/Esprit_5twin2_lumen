@@ -13,8 +13,10 @@ final class KMeans
 {
     /** @var list<list<float>> */
     private array $centres = [];
+
     /** @var list<int> */
     private array $etiquettes = [];
+
     private float $inertie = INF;
 
     public function __construct(
@@ -22,8 +24,7 @@ final class KMeans
         private int $essais = 10,
         private int $iterationsMax = 100,
         private int $graine = 42,
-    ) {
-    }
+    ) {}
 
     /** @param list<list<float>> $points (déjà standardisés de préférence) */
     public function entrainer(array $points): self
@@ -106,6 +107,7 @@ final class KMeans
             $total = array_sum($d2);
             if ($total <= 0) {
                 $centres[] = $points[mt_rand(0, count($points) - 1)];
+
                 continue;
             }
             $tirage = mt_rand() / mt_getrandmax() * $total;
@@ -118,6 +120,7 @@ final class KMeans
                 }
             }
         }
+
         return $centres;
     }
 
@@ -131,6 +134,7 @@ final class KMeans
                 [$dMin, $meilleur] = [$d, $c];
             }
         }
+
         return $meilleur;
     }
 
@@ -140,6 +144,7 @@ final class KMeans
         foreach ($a as $j => $v) {
             $s += ($v - $b[$j]) ** 2;
         }
+
         return $s;
     }
 }

@@ -3,10 +3,11 @@
 namespace Database\Factories;
 
 use App\Models\Compteur;
+use App\Models\Consommation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<\App\Models\Consommation>
+ * @extends Factory<Consommation>
  */
 class ConsommationFactory extends Factory
 {

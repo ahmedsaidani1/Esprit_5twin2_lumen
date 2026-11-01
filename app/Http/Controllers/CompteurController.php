@@ -11,9 +11,7 @@ use Illuminate\Http\Request;
 
 class CompteurController extends Controller
 {
-    public function __construct(private CompteurService $service)
-    {
-    }
+    public function __construct(private CompteurService $service) {}
 
     private function formData(Request $request): array
     {
@@ -43,6 +41,7 @@ class CompteurController extends Controller
     public function create(Request $request)
     {
         $this->authorize('create', Compteur::class);
+
         return view('compteurs.create', $this->formData($request));
     }
 
@@ -52,6 +51,7 @@ class CompteurController extends Controller
         $request->merge($this->service->prepare($request->user(), $request->all()));
 
         $compteur = $this->service->create($request->validate($this->service->rules()));
+
         return redirect()->route('compteurs.show', $compteur)->with('success', 'Compteur créé avec succès.');
     }
 
@@ -72,6 +72,7 @@ class CompteurController extends Controller
     public function edit(Request $request, Compteur $compteur)
     {
         $this->authorize('update', $compteur);
+
         return view('compteurs.edit', ['compteur' => $compteur] + $this->formData($request));
     }
 
@@ -81,6 +82,7 @@ class CompteurController extends Controller
         $request->merge($this->service->prepare($request->user(), $request->all()));
 
         $this->service->update($compteur, $request->validate($this->service->rules($compteur)));
+
         return redirect()->route('compteurs.index')->with('success', 'Compteur modifié avec succès.');
     }
 
@@ -88,6 +90,7 @@ class CompteurController extends Controller
     {
         $this->authorize('delete', $compteur);
         $this->service->delete($compteur);
+
         return redirect()->route('compteurs.index')->with('success', 'Compteur supprimé.');
     }
 }

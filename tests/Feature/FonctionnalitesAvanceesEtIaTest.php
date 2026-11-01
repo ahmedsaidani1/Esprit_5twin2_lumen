@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Communaute;
 use App\Models\Compteur;
 use App\Models\Consommation;
 use App\Models\Echange;
@@ -15,6 +14,7 @@ use App\Notifications\DemandeAchatRecue;
 use App\Notifications\FactureEmise;
 use App\Notifications\StatutEchangeModifie;
 use App\Services\Ia\AnalyseConsommationService;
+use App\Services\Ia\RecommandationOffresService;
 use App\Services\Ia\RisqueImpayeService;
 use Database\Seeders\DemoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -114,6 +114,7 @@ class FonctionnalitesAvanceesEtIaTest extends TestCase
                 'quantite_kwh' => 60, 'prix_unitaire' => 0.27, 'date_echange' => now(), 'statut' => 'accepte']);
             $f = Facture::create(['echange_id' => $e->id, 'montant_total' => 16.2, 'date_emission' => today(),
                 'date_echeance' => today()->addDays(15), 'statut' => 'impayee']);
+
             return app(RisqueImpayeService::class)->predire($f)['probabilite'];
         };
         $bob = $risque($this->user('bob'), $this->user('alice'));
@@ -137,7 +138,7 @@ class FonctionnalitesAvanceesEtIaTest extends TestCase
         $alice = $this->user('alice');
         $this->actingAs($alice)->get('/')->assertOk()->assertSee('Offres recommandées pour vous');
 
-        $reco = app(\App\Services\Ia\RecommandationOffresService::class)->pour($alice);
+        $reco = app(RecommandationOffresService::class)->pour($alice);
         $this->assertNotEmpty($reco);
         foreach ($reco as $r) {
             $this->assertNotSame($alice->id, $r['offre']->installation->user_id);
@@ -194,7 +195,7 @@ class FonctionnalitesAvanceesEtIaTest extends TestCase
     public function test_b_csv_exports(): void
     {
         $this->actingAs($this->user('alice'));
-        $prod = $this->get('/productions/export?installation_id=' . Installation::where('nom', 'Toit Alice')->value('id'));
+        $prod = $this->get('/productions/export?installation_id='.Installation::where('nom', 'Toit Alice')->value('id'));
         $prod->assertOk();
         $contenu = $prod->streamedContent();
         $this->assertStringStartsWith("\xEF\xBB\xBFinstallation;date;energie_produite_kwh", $contenu);
@@ -243,7 +244,7 @@ class FonctionnalitesAvanceesEtIaTest extends TestCase
         $alice = $this->user('alice');
         $compteur = Compteur::where('reference', 'CPT-1001')->firstOrFail();
         $existante = $compteur->consommations()->latest('date')->first()->date->toDateString();
-        $csv = "date;kwh\n" . today()->toDateString() . ";11,2\n{$existante};9\n" . today()->addDay()->toDateString() . ";3\n";
+        $csv = "date;kwh\n".today()->toDateString().";11,2\n{$existante};9\n".today()->addDay()->toDateString().";3\n";
 
         $this->actingAs($alice)->post("/compteurs/{$compteur->id}/consommations/import", [
             'fichier' => UploadedFile::fake()->createWithContent('releves.csv', $csv),
@@ -251,7 +252,7 @@ class FonctionnalitesAvanceesEtIaTest extends TestCase
 
         $this->assertEquals(11.2, $compteur->consommations()->whereDate('date', today())->value('energie_consommee_kwh'));
 
-        $export = $this->get('/consommations/export?compteur_id=' . $compteur->id)->streamedContent();
+        $export = $this->get('/consommations/export?compteur_id='.$compteur->id)->streamedContent();
         $this->assertStringContainsString('CPT-1001', $export);
         $this->assertStringNotContainsString('CPT-1002', $export); // les relevés des autres restent privés
     }
@@ -284,7 +285,7 @@ class FonctionnalitesAvanceesEtIaTest extends TestCase
     public function test_ai_api_endpoints(): void
     {
         $alice = $this->user('alice');
-        $token = ['Authorization' => 'Bearer ' . $alice->createToken('t')->plainTextToken];
+        $token = ['Authorization' => 'Bearer '.$alice->createToken('t')->plainTextToken];
         $toit = Installation::where('nom', 'Toit Alice')->firstOrFail();
         $facture = Facture::whereHas('echange', fn ($q) => $q->where('vendeur_id', $alice->id))->where('statut', 'impayee')->firstOrFail();
 
@@ -292,11 +293,11 @@ class FonctionnalitesAvanceesEtIaTest extends TestCase
         $this->getJson("/api/ia/installations/{$toit->id}/prevision", $token)->assertOk()
             ->assertJsonStructure(['prevision' => ['historique', 'prevision', 'metriques'], 'suggestion' => ['quantite_kwh', 'prix_kwh']]);
         $this->getJson("/api/ia/factures/{$facture->id}/risque", $token)->assertOk()->assertJsonStructure(['probabilite', 'niveau', 'facteurs']);
-        $this->getJson('/api/ia/compteurs/' . $alice->compteurs()->value('id') . '/analyse', $token)->assertOk()->assertJsonStructure(['anomalies', 'prevision']);
+        $this->getJson('/api/ia/compteurs/'.$alice->compteurs()->value('id').'/analyse', $token)->assertOk()->assertJsonStructure(['anomalies', 'prevision']);
         $this->getJson('/api/ia/conseils', $token)->assertOk()->assertJsonPath('profil', 'Modéré');
 
         $this->app['auth']->forgetGuards();
-        $bob = ['Authorization' => 'Bearer ' . $this->user('bob')->createToken('t')->plainTextToken];
+        $bob = ['Authorization' => 'Bearer '.$this->user('bob')->createToken('t')->plainTextToken];
         $this->getJson("/api/ia/factures/{$facture->id}/risque", $bob)->assertForbidden();
     }
 

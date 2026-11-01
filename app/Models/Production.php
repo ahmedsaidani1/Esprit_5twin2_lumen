@@ -2,20 +2,22 @@
 
 namespace App\Models;
 
+use Database\Factories\ProductionFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Production extends Model
 {
-    /** @use HasFactory<\Database\Factories\ProductionFactory> */
+    /** @use HasFactory<ProductionFactory> */
     use HasFactory;
 
     protected $fillable = ['installation_id', 'date', 'energie_produite_kwh'];
 
     protected $casts = ['date' => 'date'];
 
-    public function installation()
+    public function installation(): BelongsTo
     {
         return $this->belongsTo(Installation::class);
     }

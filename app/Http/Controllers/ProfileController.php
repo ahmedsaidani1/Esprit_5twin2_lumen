@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Communaute;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -24,7 +25,7 @@ class ProfileController extends Controller
     /** Envoie vers la confirmation du mot de passe de Fortify, puis revient sur la section 2FA du profil. */
     public function confirm()
     {
-        redirect()->setIntendedUrl(route('profile.edit') . '#2fa');
+        redirect()->setIntendedUrl(route('profile.edit').'#2fa');
 
         return redirect()->route('password.confirm');
     }
@@ -43,7 +44,7 @@ class ProfileController extends Controller
         }
 
         // On ne laisse pas la plateforme sans administrateur.
-        if ($user->isAdmin() && \App\Models\User::role('admin')->count() === 1) {
+        if ($user->isAdmin() && User::role('admin')->count() === 1) {
             return back()->withErrors(['password' => 'Vous êtes le dernier administrateur : nommez-en un autre avant.'], 'deleteAccount');
         }
 
